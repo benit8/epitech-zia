@@ -5,7 +5,7 @@
 ## CMakeLists server
 ##
 
-set(SERVER_EXE zia_server)
+set(SERVER_EXE zia)
 set(SERVER_SOURCE src)
 set(SERVER_INCLUDE header)
 
