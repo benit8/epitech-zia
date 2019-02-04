@@ -1,0 +1,13 @@
+[requires]
+sfml/2.5.1@bincrafters/stable
+boost_base/1.67.0@bincrafters/stable
+boost_system/1.67.0@bincrafters/stable
+
+[options]
+sfml:window=True
+sfml:graphics=True
+#sfml:audio=True
+sfml:network=True
+
+[generators]
+cmake
