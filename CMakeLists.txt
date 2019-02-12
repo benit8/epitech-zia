@@ -27,10 +27,25 @@ set(SOURCES
 	src/Zia.cpp
 	src/Config/INIConfig.hpp
 	src/Config/INIConfig.cpp
+	src/Network/IpAddress.hpp
+	src/Network/Packet.hpp
+	src/Network/Socket.hpp
+	src/Network/SocketSelector.hpp
+	src/Network/TcpListener.hpp
+	src/Network/TcpSocket.hpp
+	src/Network/UdpSocket.hpp
+	src/Network/IpAddress.cpp
+	src/Network/Packet.cpp
+	src/Network/Socket.cpp
+	src/Network/SocketImpl.hpp
+	src/Network/SocketSelector.cpp
+	src/Network/TcpListener.cpp
+	src/Network/TcpSocket.cpp
+	src/Network/UdpSocket.cpp
 )
 
 add_executable(${EXEC_NAME} ${SOURCES})
-target_include_directories(${EXEC_NAME} PUBLIC ./)
+target_include_directories(${EXEC_NAME} PUBLIC src/)
 
 ########################################
 

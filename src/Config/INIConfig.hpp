@@ -44,12 +44,35 @@ public:
 		return value;
 	}
 
+	template <typename T = std::string>
+	std::vector<T> getArray(const std::string &sectionName, const std::string &key)
+	{
+		auto section = m_values.find(sectionName);
+		if (section == m_values.end())
+			return std::vector<T>();
+
+		auto it = section->second.find(key);
+		if (it == section->second.end())
+			return std::vector<T>();
+
+		std::istringstream iss(it->second);
+		std::vector<T> array;
+		std::string line;
+		while (std::getline(iss, line)) {
+			std::istringstream iss_(line);
+			T val;
+			iss_ >> val;
+			array.push_back(val);
+		}
+
+		return array;
+	}
+
 private:
 	void error(const std::string &message);
 	void cleanUpLine(std::string &s);
 	std::string getQuotedText(std::string &line, const std::string &quotes = "\"");
 	void parseExpression(std::string &line);
-	void parseAssign(std::string &line);
 
 private:
 	std::map<std::string, std::map<std::string, std::string>> m_values;

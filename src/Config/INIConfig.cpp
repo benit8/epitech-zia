@@ -40,15 +40,6 @@ bool INIConfig::loadFromFile(const std::string &filename)
 		parseExpression(line);
 	}
 
-
-	for (auto section : m_values) {
-		std::cout << section.first << std::endl;
-		for (auto pair : section.second) {
-			std::cout << pair.first << " = " << pair.second << std::endl;
-		}
-	}
-
-
 	return true;
 }
 

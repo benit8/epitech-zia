@@ -9,8 +9,12 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Zia::Zia(uint16_t port)
-: m_port(port)
+const std::string Zia::configFilename = "./zia.conf";
+
+////////////////////////////////////////////////////////////////////////////////
+
+Zia::Zia()
+: m_port(8080)
 {}
 
 Zia::~Zia()
@@ -18,10 +22,21 @@ Zia::~Zia()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void Zia::usage()
+void Zia::loadConfig()
 {
-	std::cerr << "USAGE:" << std::endl;
-	std::cerr << "\tzia port" << std::endl;
-	std::cerr << "DESCRIPTION:" << std::endl;
-	std::cerr << "\tport\tthe port you fucking nigger" << std::endl;
+	m_config.loadFromFile(configFilename);
+}
+
+void Zia::loadModules()
+{
+	std::vector<std::string> moduleNames = m_config.getArray<>("zia", "modules");
+
+	for (auto it = moduleNames.begin(); it != moduleNames.end(); ++it) {
+		std::cout << *it << std::endl;
+	}
+}
+
+int Zia::run()
+{
+	return 0;
 }
