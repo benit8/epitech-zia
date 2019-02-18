@@ -9,18 +9,23 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Config/INIConfig.hpp"
+#include "json.hpp"
+#include "ModuleLoader.hpp"
+#include "Network/SocketSelector.hpp"
 
+#include <fstream>
 #include <iostream>
 #include <list>
 #include <string>
+
+using json = nlohmann::json;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 class Zia
 {
 public:
-	Zia();
+	Zia(const std::string &configFilename);
 	~Zia();
 
 public:
@@ -29,12 +34,8 @@ public:
 	int run();
 
 private:
-	void loadDefaultConfig();
-
-protected:
-	static const std::string configFilename;
-
-private:
-	INIConfig m_config;
-	uint16_t m_port;
+	std::string m_configFilename;
+	json m_config;
+	ModuleLoader m_moduleLoader;
+	Net::SocketSelector m_selector;
 };

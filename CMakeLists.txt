@@ -22,11 +22,17 @@ add_definitions("-W -Wall -Wextra")
 set(EXEC_NAME zia)
 
 set(SOURCES
+	common/Export.hpp
+	common/HTTP.hpp
+	common/Module.hpp
+	common/json.hpp
+
 	src/main.cpp
 	src/Zia.hpp
 	src/Zia.cpp
-	src/Config/INIConfig.hpp
-	src/Config/INIConfig.cpp
+	src/ModuleLoader.hpp
+	src/ModuleLoader.cpp
+	src/NonCopyable.hpp
 	src/Network/IpAddress.hpp
 	src/Network/Packet.hpp
 	src/Network/Socket.hpp
@@ -45,8 +51,9 @@ set(SOURCES
 )
 
 add_executable(${EXEC_NAME} ${SOURCES})
-target_include_directories(${EXEC_NAME} PUBLIC src/)
+target_include_directories(${EXEC_NAME} PUBLIC src/ common/)
+target_link_libraries(${EXEC_NAME} dl)
 
 ########################################
 
-add_subdirectory(modules)
+add_subdirectory(modules/)

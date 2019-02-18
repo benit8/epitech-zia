@@ -1,0 +1,20 @@
+{
+	"modules": {
+		"path": "modules/",
+		"list": [
+			"Test"
+		]
+	},
+	"hosts": [
+		{
+			"address": ["*:8080", "*:8070"],
+			"name": "a.zia",
+			"root": "www/a"
+		},
+		{
+			"address": ["*:8081"],
+			"name": "b.zia",
+			"root": "www/b"
+		}
+	]
+}
