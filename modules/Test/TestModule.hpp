@@ -29,7 +29,7 @@ namespace Modules
 		Test();
 		~Test();
 
-		bool handle(const HTTP::Request &req, HTTP::Response &res);
+		bool handle(HTTP::Request &req, HTTP::Response &res, HTTP::ProcessingList &pl);
 
 	private:
 		std::string m_name;

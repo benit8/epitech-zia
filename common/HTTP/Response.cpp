@@ -2,17 +2,26 @@
 ** EPITECH PROJECT, 2019
 ** zia
 ** File description:
-** HTTP.hpp
+** Response.cpp
 */
 
-#pragma once
+#include "Response.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace HTTP {}
+namespace HTTP
+{
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "HTTP/Request.hpp"
-#include "HTTP/Response.hpp"
-#include "HTTP/ProcessingList.hpp"
+Response::Response()
+{
+}
+
+Response::~Response()
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+}

@@ -25,8 +25,9 @@ public:
 	virtual ~IModule() {}
 
 	virtual const std::string &getName() = 0;
-	virtual bool handle(const HTTP::Request &req, HTTP::Response &res) = 0;
+	virtual bool handle(HTTP::Request &req, HTTP::Response &res, HTTP::ProcessingList &pl) = 0;
 };
+
 
 class AModule : public IModule
 {

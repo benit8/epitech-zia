@@ -52,3 +52,17 @@ int Zia::run()
 
 	return 0;
 }
+
+
+/*
+
+- Quel module appelé en premier dès la reception d'une requete ?
+
+- HTTP::ProcessingList :
+	-
+
+
+
+
+
+*/

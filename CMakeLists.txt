@@ -22,6 +22,14 @@ add_definitions("-W -Wall -Wextra")
 set(EXEC_NAME zia)
 
 set(SOURCES
+	common/HTTP/FieldContainer.hpp
+	common/HTTP/FieldContainer.cpp
+	common/HTTP/ProcessingList.hpp
+	common/HTTP/ProcessingList.cpp
+	common/HTTP/Request.hpp
+	common/HTTP/Request.cpp
+	common/HTTP/Response.hpp
+	common/HTTP/Response.cpp
 	common/Export.hpp
 	common/HTTP.hpp
 	common/Module.hpp

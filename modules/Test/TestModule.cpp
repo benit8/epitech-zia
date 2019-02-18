@@ -25,11 +25,11 @@ Test::~Test()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool Test::handle(const HTTP::Request &/*req*/, HTTP::Response &res)
+bool Test::handle(HTTP::Request &/*req*/, HTTP::Response &res, HTTP::ProcessingList &/*pl*/)
 {
-	res.setStatus(HTTP::Response::Ok);
+	res.status(HTTP::Response::Ok);
 	res["Content-Type"] = "text/plain";
-	res.setBody("Test");
+	res.body("Test");
 
 	return true;
 }
