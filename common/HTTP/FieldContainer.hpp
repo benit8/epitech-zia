@@ -41,6 +41,7 @@ public:
 
 public:
 	void parseFieldData(const std::string &data);
+	std::string exportFields();
 
 protected:
 	std::map<std::string, std::string> m_fields;

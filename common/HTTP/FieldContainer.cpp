@@ -26,6 +26,17 @@ void FieldContainer::parseFieldData(const std::string &data)
 	}
 }
 
+std::string FieldContainer::exportFields()
+{
+	std::ostringstream oss;
+
+	for (auto field : m_fields) {
+		oss << field.first << ": " << field.second << "\r\n";
+	}
+
+	return oss.str();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 }
