@@ -1,9 +1,7 @@
 {
 	"modules": {
 		"path": "modules/",
-		"list": [
-			"Test"
-		]
+		"list": ["Test", "SSL"]
 	},
 	"hosts": [
 		{

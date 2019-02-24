@@ -37,6 +37,7 @@ void Zia::loadModules()
 	for (auto it = moduleNames.begin(); it != moduleNames.end(); ++it) {
 		try {
 			m_moduleLoader.loadModule(*it);
+			std::cout << "Module '" << *it << "' loaded" << std::endl;
 		}
 		catch (std::runtime_error &e) {
 			std::cerr << "Failed to load module '" << *it << "': " << e.what() << std::endl;
@@ -59,7 +60,7 @@ int Zia::run()
 - Quel module appelé en premier dès la reception d'une requete ?
 
 - HTTP::ProcessingList :
-	-
+	- ordre des modules ?
 
 
 

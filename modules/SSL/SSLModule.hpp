@@ -7,24 +7,36 @@
 
 #pragma once
 
+////////////////////////////////////////////////////////////////////////////////
+
 namespace Modules {
-  class SSL;
+	class SSL;
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 #include "../../common/Export.hpp"
 #include "../../common/Module.hpp"
 
+////////////////////////////////////////////////////////////////////////////////
+
 namespace Modules
 {
-  class EXPORT SSL : public AModule
-  {
-  public:
-    SSL();
-    ~SSL();
 
-    bool handle(HTTP::Request &req, HTTP::Response &res, HTTP::ProcessingList &pl);
-    
-  private:
-    std::string m_name;
-  };
+////////////////////////////////////////////////////////////////////////////////
+
+class EXPORT SSL : public AModule
+{
+public:
+	SSL();
+	~SSL();
+
+	bool handle(HTTP::Request &req, HTTP::Response &res, HTTP::ProcessingList &pl);
+
+private:
+	std::string m_name;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
 }

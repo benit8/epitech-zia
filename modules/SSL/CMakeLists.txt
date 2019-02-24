@@ -5,7 +5,7 @@
 ## CMakeLists.txt
 ##
 
-set(MODULE_NAME SSL)
+set(MODULE_NAME mod_ssl)
 
 add_definitions("-shared")
 add_definitions("-fPIC")
