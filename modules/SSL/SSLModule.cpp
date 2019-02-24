@@ -6,12 +6,14 @@
 */
 
 #include "SSLModule.hpp"
+#include <iostream>
 
 namespace Modules
 {
   SSL::SSL()
     :AModule("SSL")
   {
+    std::cout << "Module SSL loaded" << std::endl;
   }
 
   SSL::~SSL()
