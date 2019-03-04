@@ -18,8 +18,5 @@ int main(int argc, char **argv)
 
 	// HTTP::Request req;
 	// req.parseRequest("GET /products#pred?id=1&page=2 HTTP/1.1\r\nHost: https://www.example.com\r\nUser-Agent: curl/7.60.0\r\nAccept: */*\r\n");
-
-
-
-	return 0;
+	// return 0;
 }

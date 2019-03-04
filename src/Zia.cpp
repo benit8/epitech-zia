@@ -52,9 +52,9 @@ int Zia::run()
 	// Boot a TcpListener for each of them, add it to the selector
 
 	for (auto& host : m_config["hosts"]) {
-		std::cout << host["name"] << std::endl;
+		std::cout << host["name"].get<std::string>() << std::endl;
 		for (auto& address : host["address"]) {
-			std::cout << address << std::endl;
+			std::cout << "\t" << address.get<std::string>() << std::endl;
 		}
 	}
 

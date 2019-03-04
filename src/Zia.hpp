@@ -39,4 +39,5 @@ private:
 
 	ModuleLoader m_moduleLoader;
 	Net::SocketSelector m_selector;
+	std::map<std::string, std::vector<Net::TcpListener>> m_hosts;
 };
