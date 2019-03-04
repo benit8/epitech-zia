@@ -64,9 +64,10 @@ public:
 	void setBlocking(bool blocking);
 	bool isBlocking() const;
 
+	Handle getHandle() const;
+
 protected:
 	Socket(Type type);
-	Handle getHandle() const;
 	void create();
 	void create(Handle handle);
 	void close();

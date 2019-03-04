@@ -1,6 +1,7 @@
 {
 	"modules": {
-		"path": "modules/"
+		"path": "modules",
+		"list": ["Test", "SSL"]
 	},
 	"hooks": {
 		"Connection": "BlackList",
