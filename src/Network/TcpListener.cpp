@@ -6,7 +6,7 @@
 */
 
 #include "Network/TcpListener.hpp"
-#include "SocketImpl.hpp"
+#include "Network/SocketImpl.hpp"
 #include <iostream>
 
 ////////////////////////////////////////////////////////////////////////////////

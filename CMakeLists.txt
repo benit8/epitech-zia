@@ -30,9 +30,18 @@ set(SOURCES
 	common/HTTP/Request.cpp
 	common/HTTP/Response.hpp
 	common/HTTP/Response.cpp
+	common/Network/IpAddress.hpp
+	common/Network/Packet.hpp
+	common/Network/Socket.hpp
+	common/Network/SocketImpl.hpp
+	common/Network/SocketSelector.hpp
+	common/Network/TcpListener.hpp
+	common/Network/TcpSocket.hpp
+	common/Network/UdpSocket.hpp
 	common/Export.hpp
 	common/HTTP.hpp
 	common/Module.hpp
+	common/NonCopyable.hpp
 	common/json.hpp
 
 	src/main.cpp
@@ -40,18 +49,9 @@ set(SOURCES
 	src/Zia.cpp
 	src/ModuleLoader.hpp
 	src/ModuleLoader.cpp
-	src/NonCopyable.hpp
-	src/Network/IpAddress.hpp
-	src/Network/Packet.hpp
-	src/Network/Socket.hpp
-	src/Network/SocketSelector.hpp
-	src/Network/TcpListener.hpp
-	src/Network/TcpSocket.hpp
-	src/Network/UdpSocket.hpp
 	src/Network/IpAddress.cpp
 	src/Network/Packet.cpp
 	src/Network/Socket.cpp
-	src/Network/SocketImpl.hpp
 	src/Network/SocketSelector.cpp
 	src/Network/TcpListener.cpp
 	src/Network/TcpSocket.cpp

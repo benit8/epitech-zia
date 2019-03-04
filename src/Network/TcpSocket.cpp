@@ -6,7 +6,7 @@
 */
 
 #include "Network/TcpSocket.hpp"
-#include "SocketImpl.hpp"
+#include "Network/SocketImpl.hpp"
 #include <algorithm>
 #include <cstring>
 #include <iostream>

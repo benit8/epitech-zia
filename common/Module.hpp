@@ -15,6 +15,7 @@ class AModule;
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "HTTP.hpp"
+#include "Network/TcpSocket.hpp"
 
 #include <string>
 
@@ -25,10 +26,15 @@ class IModule
 public:
 	virtual ~IModule() {}
 
+	virtual bool onConnection(Net::TcpSocket &) = 0;
+	virtual bool onReceive(Net::TcpSocket &, HTTP::Request &) = 0;
+	virtual bool onContentGen(HTTP::Request &, HTTP::Response &) = 0;
+	virtual bool onSend(Net::TcpSocket &, HTTP::Response &) = 0;
+
 	virtual const std::string &getName() = 0;
-	virtual bool handle(HTTP::Request &req, HTTP::Response &res, HTTP::ProcessingList &pl) = 0;
 };
 
+////////////////////////////////////////////////////////////////////////////////
 
 class AModule : public IModule
 {

@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include "Network/Socket.hpp"
-#include "SocketImpl.hpp"
+#include "Network/SocketImpl.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 

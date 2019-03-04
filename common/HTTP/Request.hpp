@@ -17,6 +17,10 @@ namespace HTTP {
 
 #include "FieldContainer.hpp"
 
+#include <array>
+#include <iostream>
+#include <regex>
+
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace HTTP
@@ -38,9 +42,24 @@ public:
 		TRACE,
 		CONNECT
 	};
+
+	static const std::regex urlRegex;
+	static const std::array<std::string, 8> validMethods;
+	static const std::array<std::string, 19> validHeaders;
+
 public:
 	Request();
 	~Request();
+
+	bool parseRequest(const std::string &data);
+
+private:
+	std::string m_method;
+	std::string m_host;
+	std::uint16_t m_port;
+	std::string m_url;
+	std::string m_uri;
+	std::string m_query;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

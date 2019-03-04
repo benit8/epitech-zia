@@ -15,8 +15,8 @@ namespace Modules {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "../../common/Export.hpp"
-#include "../../common/Module.hpp"
+#include "Export.hpp"
+#include "Module.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -29,10 +29,12 @@ namespace Modules
 		Test();
 		~Test();
 
-		bool handle(HTTP::Request &req, HTTP::Response &res, HTTP::ProcessingList &pl);
+		bool onContentGen(HTTP::Request &req, HTTP::Response &res);
 
-	private:
-		std::string m_name;
+		// Unused
+		bool onConnection(Net::TcpSocket &) { return false; }
+		bool onReceive(Net::TcpSocket &, HTTP::Request &) { return false; }
+		bool onSend(Net::TcpSocket &, HTTP::Response &) { return false; }
 	};
 
 }

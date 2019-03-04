@@ -20,14 +20,14 @@ namespace Modules
     SSL_library_init();
     SSL_load_error_strings();
   }
-  
+
   SSL::~SSL()
   {
   }
-  
+
   ////////////////////////////////////////////////////////////////////////////////
-  
-  bool SSL::onReceive(Net::TcpSoket &/*sock*/, HTTP::Request &/*req*/)
+
+  bool SSL::onReceive(Net::TcpSocket &/*sock*/, HTTP::Request &/*req*/)
   {
     return true;
   }
@@ -36,8 +36,8 @@ namespace Modules
   {
     return true;
   }
-  
-  
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
 }

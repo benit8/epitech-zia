@@ -25,7 +25,7 @@ Test::~Test()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool Test::handle(HTTP::Request &/*req*/, HTTP::Response &res, HTTP::ProcessingList &/*pl*/)
+bool Test::onContentGen(HTTP::Request &/*req*/, HTTP::Response &res)
 {
 	res.status(HTTP::Response::Ok);
 	res["Content-Type"] = "text/plain";

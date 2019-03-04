@@ -6,7 +6,7 @@
 */
 
 #include "Network/Packet.hpp"
-#include "SocketImpl.hpp"
+#include "Network/SocketImpl.hpp"
 #include <cstring>
 
 ////////////////////////////////////////////////////////////////////////////////

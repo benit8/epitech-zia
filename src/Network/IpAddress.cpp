@@ -6,7 +6,7 @@
 */
 
 #include "Network/IpAddress.hpp"
-#include "SocketImpl.hpp"
+#include "Network/SocketImpl.hpp"
 #include "Network/TcpSocket.hpp"
 
 #include <arpa/inet.h>

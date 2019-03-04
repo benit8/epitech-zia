@@ -14,6 +14,7 @@ add_definitions("-W -Wall -Wextra")
 set(SOURCES
 	../../common/Export.hpp
 	../../common/Module.hpp
+	../../common/Network/TcpSocket.hpp
 	TestModule.hpp
 	TestModule.cpp
 )

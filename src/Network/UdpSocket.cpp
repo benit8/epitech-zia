@@ -6,7 +6,7 @@
 */
 
 #include "Network/UdpSocket.hpp"
-#include "SocketImpl.hpp"
+#include "Network/SocketImpl.hpp"
 #include <algorithm>
 #include <iostream>
 

@@ -40,7 +40,7 @@ public:
 	std::string operator [](const std::string &key) { return m_fields[key]; }
 
 public:
-	void parseFieldData(const std::string &data);
+	void parseFields(const std::string &data);
 	std::string exportFields();
 
 protected:

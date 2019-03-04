@@ -1,7 +1,12 @@
 {
 	"modules": {
-		"path": "modules/",
-		"list": ["Test", "SSL"]
+		"path": "modules/"
+	},
+	"hooks": {
+		"Connection": "BlackList",
+		"Receive": "SSL",
+		"ContentGen": "HTTP",
+		"Send": "SSL"
 	},
 	"hosts": [
 		{

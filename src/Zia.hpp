@@ -36,6 +36,7 @@ public:
 private:
 	std::string m_configFilename;
 	json m_config;
+
 	ModuleLoader m_moduleLoader;
 	Net::SocketSelector m_selector;
 };

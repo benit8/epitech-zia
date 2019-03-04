@@ -51,19 +51,12 @@ int Zia::run()
 	// Get a compilation of all the ports we need to listen to (eg. 80, 443, ...)
 	// Boot a TcpListener for each of them, add it to the selector
 
+	// for (auto& host : m_config["hosts"]) {
+	// 	std::cout << host["name"] << std::endl;
+	// 	for (auto& address : host["address"]) {
+	// 		std::cout << address << std::endl;
+	// 	}
+	// }
+
 	return 0;
 }
-
-
-/*
-
-- Quel module appelé en premier dès la reception d'une requete ?
-
-- HTTP::ProcessingList :
-	- ordre des modules ?
-
-
-
-
-
-*/

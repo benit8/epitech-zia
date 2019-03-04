@@ -14,7 +14,7 @@ namespace HTTP
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void FieldContainer::parseFieldData(const std::string &data)
+void FieldContainer::parseFields(const std::string &data)
 {
 	std::istringstream iss(data);
 	std::string line;

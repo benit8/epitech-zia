@@ -6,7 +6,7 @@
 */
 
 #include "Network/SocketSelector.hpp"
-#include "SocketImpl.hpp"
+#include "Network/SocketImpl.hpp"
 #include <algorithm>
 #include <iostream>
 #include <utility>
