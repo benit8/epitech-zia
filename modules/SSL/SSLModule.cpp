@@ -14,33 +14,30 @@ namespace Modules
 
 ////////////////////////////////////////////////////////////////////////////////
 
-SSL::SSL()
-  : AModule("SSL"), m_name("SSL_module")
-{
-  SSL_library_init();
-  SSL_load_error_strings();
-}
-
-SSL::~SSL()
-{
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-bool	SSL::onReceive(Net::TcpSoket &sock, HTTP::Request &req)
-{
+  SSL::SSL()
+    : AModule("SSL"), m_name("SSL_module")
+  {
+    SSL_library_init();
+    SSL_load_error_strings();
+  }
   
-}
+  SSL::~SSL()
+  {
+  }
   
-bool SSL::handle(HTTP::Request &/*req*/, HTTP::Response &res, HTTP::ProcessingList &/*pl*/)
-{
-	res.status(HTTP::Response::NotImplemented);
-	res["Content-Type"] = "text/plain";
-	res.body("SSL");
+  ////////////////////////////////////////////////////////////////////////////////
+  
+  bool SSL::onReceive(Net::TcpSoket &/*sock*/, HTTP::Request &/*req*/)
+  {
+    return true;
+  }
 
-	return true;
-}
-
+  bool	SSL::onSend(Net::TcpSocket &/*sock*/, HTTP::Response &/*resp*/)
+  {
+    return true;
+  }
+  
+  
 ////////////////////////////////////////////////////////////////////////////////
 
 }

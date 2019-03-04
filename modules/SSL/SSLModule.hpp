@@ -36,7 +36,7 @@ public:
 	~SSL();
 
 	bool	onReceive(Net::TcpSocket &, HTTP::Request &) override;
-	bool	onSend(Net::TcpSocket &, HTTP::Resposne &) override;
+	bool	onSend(Net::TcpSocket &, HTTP::Response &) override;
 
 private:
 	std::string	m_name;
