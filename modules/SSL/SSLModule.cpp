@@ -17,7 +17,8 @@ namespace Modules
   SSL::SSL()
     : AModule("SSL"), m_name("SSL_module")
   {
-    SSL_library_init();
+    OPENSSL_init_ssl(0, NULL);
+    //    SSL_library_init();
     SSL_load_error_strings();
   }
 
@@ -27,8 +28,11 @@ namespace Modules
 
   ////////////////////////////////////////////////////////////////////////////////
 
-  bool SSL::onReceive(Net::TcpSocket &/*sock*/, HTTP::Request &/*req*/)
+  bool SSL::onReceive(Net::TcpSocket &sock, HTTP::Request &/*req*/)
   {
+    m_socket = sock.getHandle();
+    m_port = sock.getRemotePort();
+    // Init CTX and load method
     return true;
   }
 

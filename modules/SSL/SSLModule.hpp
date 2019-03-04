@@ -18,6 +18,7 @@ namespace Modules {
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/bio.h>
+#include <openssl/opensslv.h>
 
 #include "../../common/Export.hpp"
 #include "../../common/Module.hpp"
@@ -47,7 +48,7 @@ private:
 	SSL_CTX		*m_ctx;
 	SSL		*m_ssl;
 	int		m_socket;
-	int		m_port;
+	uint16_t	m_port;
 	std::string	m_address;
 	bool		m_isEnabled;
 };
