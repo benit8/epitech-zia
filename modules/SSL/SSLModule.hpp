@@ -15,6 +15,10 @@ namespace Modules {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/bio.h>
+
 #include "../../common/Export.hpp"
 #include "../../common/Module.hpp"
 
@@ -31,10 +35,17 @@ public:
 	SSL();
 	~SSL();
 
-	bool handle(HTTP::Request &req, HTTP::Response &res, HTTP::ProcessingList &pl);
+	bool	onReceive(Net::TcpSocket &, HTTP::Request &) override;
+	bool	onSend(Net::TcpSocket &, HTTP::Resposne &) override;
 
 private:
-	std::string m_name;
+	std::string	m_name;
+	SSL_CTX		*m_ctx;
+	SSL		*m_ssl;
+	int		m_socket;
+	int		m_port;
+	std::string	m_address;
+	bool		m_isEnabled;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
