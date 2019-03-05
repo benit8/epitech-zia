@@ -35,6 +35,7 @@ namespace Modules
 		bool onConnection(Net::TcpSocket &) { return false; }
 		bool onReceive(Net::TcpSocket &, HTTP::Request &) { return false; }
 		bool onSend(Net::TcpSocket &, HTTP::Response &) { return false; }
+		bool checkModule() { return false; }
 	};
 
 }

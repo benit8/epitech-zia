@@ -59,10 +59,6 @@ void Zia::loadModules()
 
 int Zia::run()
 {
-	// Parse website files ?
-	// Get a compilation of all the ports we need to listen to (eg. 80, 443, ...)
-	// Boot a TcpListener for each of them, add it to the selector
-
 	for (auto &host : m_config["hosts"]) {
 		std::string hostname = host["name"].get<std::string>();
 		m_hosts[hostname].clear();

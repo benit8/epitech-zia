@@ -1,5 +1,13 @@
 #!/bin/sh
 
+
+if [ "$1" == "ssl" ]; then
+    cd ./modules/SSL/
+    cmake . -G "Unix Makefiles" && cmake --build . && make
+    mv ./libmod_ssl.so ../
+    exit
+fi
+
 rm -rf ./build
 rm ./modules/*.so
 

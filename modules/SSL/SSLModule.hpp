@@ -9,49 +9,42 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace Modules {
-	class SSL;
-}
+class SSLmod;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/bio.h>
+#include <openssl/opensslv.h>
 
 #include "../../common/Export.hpp"
 #include "../../common/Module.hpp"
+#include "./Colors.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace Modules
-{
-
-////////////////////////////////////////////////////////////////////////////////
-
-class EXPORT SSL : public AModule
+class EXPORT SSLmod : public AModule
 {
 public:
-	SSL();
-	~SSL();
+	SSLmod();
+	~SSLmod();
 
 	bool	onReceive(Net::TcpSocket &, HTTP::Request &);
 	bool	onSend(Net::TcpSocket &, HTTP::Response &);
+	bool	checkModule();
 
 	// Unused
 	bool	onConnection(Net::TcpSocket &) { return false; }
 	bool	onContentGen(HTTP::Request &, HTTP::Response &) { return false; }
 
 private:
-	std::string	m_name;
 	SSL_CTX		*m_ctx;
 	SSL		*m_ssl;
 	int		m_socket;
-	int		m_port;
+	uint16_t	m_port;
 	std::string	m_address;
 	bool		m_isEnabled;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-
-}
