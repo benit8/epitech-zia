@@ -14,7 +14,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 
 project(Zia)
 conan_basic_setup()
-add_definitions("-fPIC")
+add_definitions("-fPIC -g3")
 add_definitions("-W -Wall -Wextra")
 
 ########################################

@@ -9,7 +9,8 @@ fi
 
 mkdir ./build && cd ./build &&
 conan install .. --build=missing &&
-cmake .. -G "Unix Makefiles" && cmake --build . &&
+cmake .. -G "Unix Makefiles" &&
+cmake --build . --config Debug -- -j 4 &&
 make &&
 
 # we still in ./build

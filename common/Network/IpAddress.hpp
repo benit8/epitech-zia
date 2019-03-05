@@ -33,8 +33,13 @@ public:
 	IpAddress(uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3);
 	explicit IpAddress(uint32_t address);
 
+	IpAddress &operator =(const char *address);
+	IpAddress &operator =(const std::string &address);
+	IpAddress &operator =(uint32_t &address);
+
 	std::string toString() const;
 	uint32_t toInteger() const;
+	bool isValid() const;
 
 	static IpAddress getLocalAddress();
 	static IpAddress getPublicAddress(unsigned timeout = 0);

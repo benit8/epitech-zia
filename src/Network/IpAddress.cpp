@@ -64,6 +64,31 @@ IpAddress::IpAddress(uint32_t address)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+IpAddress &IpAddress::operator =(const char *address)
+{
+	m_address = 0;
+	m_valid = false;
+	resolve(address);
+	return *this;
+}
+
+IpAddress &IpAddress::operator =(const std::string &address)
+{
+	m_address = 0;
+	m_valid = false;
+	resolve(address);
+	return *this;
+}
+
+IpAddress &IpAddress::operator =(uint32_t &address)
+{
+	m_address = htonl(address);
+	m_valid = true;
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 std::string IpAddress::toString() const
 {
 	in_addr address;
@@ -75,6 +100,11 @@ std::string IpAddress::toString() const
 uint32_t IpAddress::toInteger() const
 {
 	return ntohl(m_address);
+}
+
+bool IpAddress::isValid() const
+{
+	return m_valid;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
