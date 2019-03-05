@@ -30,6 +30,7 @@ public:
 	virtual bool onReceive(Net::TcpSocket &, HTTP::Request &) = 0;
 	virtual bool onContentGen(HTTP::Request &, HTTP::Response &) = 0;
 	virtual bool onSend(Net::TcpSocket &, HTTP::Response &) = 0;
+        virtual bool checkModule() = 0;
 
 	virtual const std::string &getName() = 0;
 };

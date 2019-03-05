@@ -9,9 +9,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace Modules {
-	class SSL;
-}
+class SSLmod;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -22,29 +20,25 @@ namespace Modules {
 
 #include "../../common/Export.hpp"
 #include "../../common/Module.hpp"
+#include "./Colors.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace Modules
-{
-
-////////////////////////////////////////////////////////////////////////////////
-
-class EXPORT SSL : public AModule
+class EXPORT SSLmod : public AModule
 {
 public:
-	SSL();
-	~SSL();
+	SSLmod();
+	~SSLmod();
 
 	bool	onReceive(Net::TcpSocket &, HTTP::Request &);
 	bool	onSend(Net::TcpSocket &, HTTP::Response &);
+	bool	checkModule();
 
 	// Unused
 	bool	onConnection(Net::TcpSocket &) { return false; }
 	bool	onContentGen(HTTP::Request &, HTTP::Response &) { return false; }
 
 private:
-	std::string	m_name;
 	SSL_CTX		*m_ctx;
 	SSL		*m_ssl;
 	int		m_socket;
@@ -54,5 +48,3 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-
-}

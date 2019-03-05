@@ -58,5 +58,11 @@ int Zia::run()
 		}
 	}
 
+	//SEGV
+	IModule	*ssl_test = m_moduleLoader.loadModule("SSL");
+	ssl_test->checkModule();
+	delete ssl_test;
+	//SEGV
+
 	return 0;
 }
