@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2019
 ** zia
 ** File description:
-** TestModule.hpp
+** HTTPModule.hpp
 */
 
 #pragma once
@@ -10,7 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace Modules {
-	class Test;
+	class HTTPMod;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,19 +23,19 @@ namespace Modules {
 namespace Modules
 {
 
-	class EXPORT Test : public AModule
+	class EXPORT HTTPMod : public AModule
 	{
 	public:
-		Test();
-		~Test();
+		HTTPMod();
+		~HTTPMod();
 
-		bool onContentGen(HTTP::Request &req, HTTP::Response &res);
+		bool onReceive(Net::TcpSocket *, std::string &);
+		bool onParsing(const std::string &buffer, HTTP::Request &req);
+		bool onSend(Net::TcpSocket *, const std::string &);
 
 		// Unused
 		bool onConnection(Net::TcpSocket *) { return false; }
-		bool onReceive(Net::TcpSocket *, std::string &) { return false; }
-		bool onParsing(const std::string &, HTTP::Request &) { return false; }
-		bool onSend(Net::TcpSocket *, const std::string &) { return false; }
+		bool onContentGen(HTTP::Request &, HTTP::Response &) { return false; }
 		bool checkModule() { return false; }
 	};
 

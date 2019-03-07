@@ -19,16 +19,15 @@ SSLmod::SSLmod()
 
 SSLmod::~SSLmod()
 {
-  std::cout << "SSLmod destroyed" << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool SSLmod::onReceive(Net::TcpSocket &sock, HTTP::Request &/*req*/)
+bool SSLmod::onReceive(Net::TcpSocket *sock, std::string &/*buffer*/)
 {
-  m_socket = sock.getHandle();
-  m_port = sock.getRemotePort();
-  // Init CTX 
+  m_socket = sock->getHandle();
+  m_port = sock->getRemotePort();
+  // Init CTX
   m_ctx = SSL_CTX_new(SSLv23_server_method());
   if (!m_ctx)
     return false;
@@ -50,7 +49,7 @@ bool SSLmod::onReceive(Net::TcpSocket &sock, HTTP::Request &/*req*/)
   return true;
 }
 
-bool	SSLmod::onSend(Net::TcpSocket &/*sock*/, HTTP::Response &/*resp*/)
+bool	SSLmod::onSend(Net::TcpSocket */*sock*/, const std::string &/*buffer*/)
 {
   return true;
 }
@@ -94,7 +93,7 @@ extern "C"
   {
     return new SSLmod();
   }
-  
+
   void unloadModule(SSLmod *mod)
   {
     delete mod;

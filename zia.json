@@ -1,24 +1,33 @@
 {
-	"modules": {
-		"path": "modules",
-	        "list": ["Test", "SSL"]
+	"Modules": {
+		"Path": "modules",
+		"List": ["Test", "HTTP", "SSL"]
 	},
-	"hooks": {
-		"Connection": "BlackList",
-		"Receive": "SSL",
-		"ContentGen": "HTTP",
-		"Send": "SSL"
+	"Hooks": {
+		"Connection": "",
+		"Receive": "HTTP",
+		"Parsing": "HTTP",
+		"ContentGen": "Test",
+		"Send": "HTTP"
 	},
-	"hosts": [
+	"Hosts": [
 		{
-			"address": ["*:8080", "*:8070"],
-			"name": "a.zia",
-			"root": "www/a"
+			"Address": ["*:8080"],
+			"Name": "a.zia",
+			"Root": "www/a"
 		},
 		{
-			"address": ["*:8081"],
-			"name": "b.zia",
-			"root": "www/b"
+			"Address": ["*:4433"],
+			"Name": "a.zia",
+			"Root": "www/a",
+			"SSLEngine": "On",
+			"SSLCert": "",
+			"SSLKey": ""
+		},
+		{
+			"Address": ["*:8081"],
+			"Name": "b.zia",
+			"Root": "www/b"
 		}
 	]
 }

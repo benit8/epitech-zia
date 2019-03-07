@@ -17,6 +17,8 @@ namespace HTTP {
 
 #include "FieldContainer.hpp"
 
+#include <map>
+
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace HTTP
@@ -73,18 +75,33 @@ public:
 		GatewayTimeout               = 504,
 		HTTPVersionNotSupported      = 505
 	};
+
+	static std::map<Status, std::string> statusStrings;
+
 public:
 	Response();
 	~Response();
 
+	std::string prepare();
+
+public:
 	void status(Status status) { m_status = status; }
 	Status status() { return m_status; }
 	void body(const std::string &body) { m_body = body; }
 	const std::string &body() { return m_body; }
 
+	const std::string &data() { return m_data; }
+	std::size_t length() const { return m_dataLength; }
+
+private:
+	std::string getDateString();
+
 private:
 	Status m_status;
 	std::string m_body;
+
+	std::string m_data;
+	std::size_t m_dataLength;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

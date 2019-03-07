@@ -38,8 +38,9 @@ public:
 	ModuleLoader(const std::string &modulesPath = "./modules");
 	~ModuleLoader();
 
-	IModule *loadModule(const std::string &moduleName);
 	void setModulesPath(const std::string &modulesPath);
+	IModule *loadModule(const std::string &moduleName);
+	IModule *getModule(const std::string &moduleName);
 
 private:
 	std::string makeModulePath(const std::string &moduleName);

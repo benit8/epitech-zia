@@ -49,6 +49,7 @@ set(SOURCES
 	src/Zia.cpp
 	src/ModuleLoader.hpp
 	src/ModuleLoader.cpp
+	src/ThreadPool.hpp
 	src/Network/IpAddress.cpp
 	src/Network/Packet.cpp
 	src/Network/Socket.cpp
@@ -60,7 +61,7 @@ set(SOURCES
 
 add_executable(${EXEC_NAME} ${SOURCES})
 target_include_directories(${EXEC_NAME} PUBLIC src/ common/)
-target_link_libraries(${EXEC_NAME} dl)
+target_link_libraries(${EXEC_NAME} dl pthread)
 
 ########################################
 

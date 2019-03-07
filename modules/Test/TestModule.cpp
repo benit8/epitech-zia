@@ -25,11 +25,11 @@ Test::~Test()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool Test::onContentGen(HTTP::Request &/*req*/, HTTP::Response &res)
+bool Test::onContentGen(HTTP::Request &req, HTTP::Response &res)
 {
 	res.status(HTTP::Response::Ok);
-	res["Content-Type"] = "text/plain";
-	res.body("Test");
+	res["Content-Type"] = "text/html";
+	res.body("<!DOCTYPE html><html><head><meta charset=\"UTF-8\" /><title>Zia | " + req["Host"] + "</title></head><body><h1>Hello World!</h1></body></html>");
 
 	return true;
 }
@@ -42,7 +42,6 @@ bool Test::onContentGen(HTTP::Request &/*req*/, HTTP::Response &res)
 
 extern "C"
 {
-
 	IModule *loadModule()
 	{
 		return new Modules::Test();
@@ -52,5 +51,4 @@ extern "C"
 	{
 		delete mod;
 	}
-
 }

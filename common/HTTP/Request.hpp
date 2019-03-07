@@ -44,6 +44,7 @@ public:
 	};
 
 	static const std::regex urlRegex;
+	static const std::regex versionRegex;
 	static const std::array<std::string, 8> validMethods;
 	static const std::array<std::string, 19> validHeaders;
 
@@ -53,6 +54,11 @@ public:
 
 	bool parseRequest(const std::string &data);
 
+	const std::string &method() const { return m_method; }
+	const std::string &host() const { return m_host; }
+	std::uint16_t port() const { return m_port; }
+
+
 private:
 	std::string m_method;
 	std::string m_host;
@@ -60,6 +66,8 @@ private:
 	std::string m_url;
 	std::string m_uri;
 	std::string m_query;
+	int m_versionMajor;
+	int m_versionMinor;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

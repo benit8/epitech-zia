@@ -16,13 +16,14 @@ ModuleLoader::ModuleLoader(const std::string &modulesPath)
 
 ModuleLoader::~ModuleLoader()
 {
-	for (auto it = m_handles.begin(); it != m_handles.end(); ++it) {
+	for (auto &handle : m_handles) {
 		void (*destructor)(void *);
-		*(void **)(&destructor) = dlsym(it->second, "unloadModule");
+		*(void **)(&destructor) = dlsym(handle.second, "unloadModule");
+		(*destructor)(m_modules[handle.first]);
 
-		(*destructor)(m_modules[it->first]);
+		dlclose(handle.second);
 
-		dlclose(it->second);
+		std::cout << "Unloaded module '" << handle.first << "'" << std::endl;
 	}
 }
 
@@ -66,4 +67,9 @@ void ModuleLoader::setModulesPath(const std::string &modulesPath)
 {
 	if (modulesPath != "")
 		m_modulesPath = modulesPath;
+}
+
+IModule *ModuleLoader::getModule(const std::string &name)
+{
+	return m_modules.find(name) != m_modules.end() ? m_modules[name] : nullptr;
 }

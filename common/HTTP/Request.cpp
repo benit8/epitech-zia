@@ -15,6 +15,7 @@ namespace HTTP
 ////////////////////////////////////////////////////////////////////////////////
 
 const std::regex Request::urlRegex = std::regex("^(?:(http(?:s)?):\\/\\/)?([\\w\\.-]+)+(?:\\:([\\d]+))?(\\/.*)(?:\\?(.*))$");
+const std::regex Request::versionRegex = std::regex("^HTTP\\/([\\d]+)\\.([\\d]+)$");
 
 const std::array<std::string, 8> Request::validMethods = {
 	"OPTIONS",
@@ -53,6 +54,8 @@ const std::array<std::string, 19> Request::validHeaders = {
 
 Request::Request()
 : m_port(80)
+, m_versionMajor(0)
+, m_versionMinor(0)
 {
 }
 
@@ -96,6 +99,23 @@ bool Request::parseRequest(const std::string &data)
 
 		return true;
 	}
+	else {
+		m_uri = m_url;
+		m_url = "";
+	}
+
+	std::string versionString;
+	std::smatch versionMatch;
+	iss >> versionString;
+	if (!std::regex_search(versionString, versionMatch, versionRegex)) {
+		std::cerr << "Failed to match HTTP version" << std::endl;
+		return false;
+	}
+	m_versionMajor = std::stoi(versionMatch[1]);
+	m_versionMinor = std::stoi(versionMatch[2]);
+
+	iss.ignore(9999, '\n');
+	parseFields(iss);
 
 	return true;
 }

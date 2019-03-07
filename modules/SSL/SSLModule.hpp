@@ -30,12 +30,13 @@ public:
 	SSLmod();
 	~SSLmod();
 
-	bool	onReceive(Net::TcpSocket &, HTTP::Request &);
-	bool	onSend(Net::TcpSocket &, HTTP::Response &);
+	bool	onReceive(Net::TcpSocket *socket, std::string &buffer);
+	bool	onSend(Net::TcpSocket *socket, const std::string &buffer);
 	bool	checkModule();
 
 	// Unused
-	bool	onConnection(Net::TcpSocket &) { return false; }
+	bool	onParsing(const std::string &, HTTP::Request &) { return false; }
+	bool	onConnection(Net::TcpSocket *) { return false; }
 	bool	onContentGen(HTTP::Request &, HTTP::Response &) { return false; }
 
 private:

@@ -16,6 +16,7 @@ std::list<Zia *> Zia::s_instances;
 Zia::Zia(const std::string &configFilename)
 : m_configFilename(configFilename)
 , m_running(false)
+, m_workers(5)
 {
 	if (s_instances.size() < 1) {
 		std::signal(SIGINT, Zia::dispatchSignal);
@@ -43,9 +44,9 @@ void Zia::loadConfig()
 
 void Zia::loadModules()
 {
-	m_moduleLoader.setModulesPath(m_config["modules"]["path"].get<std::string>());
-
-	auto moduleNames = m_config["modules"]["list"].get<std::vector<std::string>>();
+	// Load actual modules
+	m_moduleLoader.setModulesPath(m_config["Modules"]["Path"].get<std::string>());
+	auto moduleNames = m_config["Modules"]["List"].get<std::vector<std::string>>();
 	for (auto it = moduleNames.begin(); it != moduleNames.end(); ++it) {
 		try {
 			m_moduleLoader.loadModule(*it);
@@ -55,33 +56,16 @@ void Zia::loadModules()
 			std::cerr << "Failed to load module '" << *it << "': " << e.what() << std::endl;
 		}
 	}
+
+	// Setup hooks
+	m_hooks = m_config["Hooks"].get<std::map<std::string, std::string>>();
 }
 
 int Zia::run()
 {
-	for (auto &host : m_config["hosts"]) {
-		std::string hostname = host["name"].get<std::string>();
-		m_hosts[hostname].clear();
-		for (auto &address : host["address"]) {
-			Net::IpAddress addr;
-			std::uint16_t port;
-			if (!parseHostAddress(address, addr, port)) {
-				std::cerr << "Invalid address '" << address << "' in host " << hostname << std::endl;
-				continue;
-			}
-
-			Net::TcpListener *listener = new Net::TcpListener;
-			if (listener->listen(port, addr) != Net::Socket::Done) {
-				std::cerr << "Failed to listen to " << address << std::endl;
-				delete listener;
-				continue;
-			}
-
-			m_selector.add(*listener);
-			m_hosts[hostname].push_back(listener);
-
-			std::cout << "Host " << hostname << ": listening to " << address << std::endl;
-		}
+	for (auto &host : m_config["Hosts"]) {
+		for (auto &address : host["Address"])
+			createListener(host, address);
 	}
 
 	m_running = true;
@@ -91,17 +75,44 @@ int Zia::run()
 	}
 
 	for (auto &host : m_hosts) {
-		for (auto &listener : host.second) {
-			listener->close();
-			m_selector.remove(*listener);
-			delete listener;
-		}
+		host.first->close();
+		m_selector.remove(*host.first);
+		delete host.first;
+	}
+
+	for (auto &sock : m_aliveSockets) {
+		m_selector.remove(*sock);
+		sock->disconnect();
+		delete sock;
 	}
 
 	return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+bool Zia::createListener(const json &host, const std::string &address)
+{
+	Net::IpAddress addr;
+	std::uint16_t port;
+	if (!parseHostAddress(address, addr, port)) {
+		std::cerr << "Invalid address '" << address << "' in host " << host["Name"] << std::endl;
+		return false;
+	}
+
+	Net::TcpListener *listener = new Net::TcpListener;
+	if (listener->listen(port, addr) != Net::Socket::Done) {
+		std::cerr << "Failed to listen to " << address << std::endl;
+		delete listener;
+		return false;
+	}
+
+	m_selector.add(*listener);
+	m_hosts[listener].push_back(host);
+
+	std::cout << "Listening to " << address << " for " << host["Name"] << std::endl;
+	return true;
+}
 
 bool Zia::parseHostAddress(const std::string &hostString, Net::IpAddress &address, std::uint16_t &port)
 {
@@ -130,52 +141,64 @@ bool Zia::parseHostAddress(const std::string &hostString, Net::IpAddress &addres
 void Zia::handleNetworkEvent()
 {
 	for (auto &host : m_hosts) {
-		for (auto &listener : host.second) {
-			if (m_selector.isReady(*listener)) {
-				Net::TcpSocket clientSocket;
-				Net::Socket::Status status = listener->accept(clientSocket);
-				if (status != Net::Socket::Done) {
-					std::cerr << "Failed to accept new client: (" << status << ")" << std::endl;
-					continue;
-				}
+		if (m_selector.isReady(*host.first))
+			handleListenerEvent(host.first);
+	}
+}
 
-				std::cout << "Connection from " << clientSocket << std::endl;
+void Zia::handleListenerEvent(Net::TcpListener *listener)
+{
+	Net::TcpSocket *clientSocket = new Net::TcpSocket;
+	Net::Socket::Status status = listener->accept(*clientSocket);
+	if (status != Net::Socket::Done) {
+		std::cerr << "-- Failed to accept new client: (" << status << ")" << std::endl;
+		delete clientSocket;
+		return;
+	}
+	else {
+		std::cout << "++ Connection from " << *clientSocket << std::endl;
+	}
 
-				// triggerHook(Connection);
+	////////////////////////////////////////////////////////////////////////
 
-				std::size_t readSize = 128;
-				std::size_t length = 0;
-				std::string rawReq;
-				for (;;) {
-					char buffer[readSize] = {0};
-					std::size_t received = 0;
-					status = clientSocket.receive(buffer, readSize, received);
-					if (status != Net::Socket::Done) {
-						std::cerr << "Data reception failed (" << status << ")" << std::endl;
-						length = 0;
-						break;
-					}
-
-					rawReq.append(buffer, received);
-					length += received;
-					if (received < readSize)
-						break;
-				}
-
-				if (length == 0)
-					continue;
-
-				std::cout << ">> Received " << length << " bytes" << std::endl;
-				std::cout << "---------------------------------" << std::endl
-				          << rawReq
-				          << "---------------------------------" << std::endl << std::endl;
-
-				std::string res = "HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: 12\r\n\r\nHello World!";
-				clientSocket.send(res.data(), res.length());
-
-				clientSocket.disconnect();
-			}
+	if (!onConnection(clientSocket)) {
+		if (clientSocket->getRemoteAddress() == Net::IpAddress::None) {
+			delete clientSocket;
+			return;
 		}
+	}
+
+	////////////////////////////////////////////////////////////////////////
+
+	std::string buffer;
+	if (!onReceive(clientSocket, buffer)) {
+		clientSocket->disconnect();
+		delete clientSocket;
+		return;
+	}
+
+	////////////////////////////////////////////////////////////////////////
+
+	HTTP::Request req;
+	HTTP::Response res;
+	onParsing(buffer, req);
+
+	////////////////////////////////////////////////////////////////////////
+
+	onContentGen(req, res);
+
+	////////////////////////////////////////////////////////////////////////
+
+	std::string rawRes = res.prepare();
+	onSend(clientSocket, rawRes);
+
+	if (req["Connection"] == "keep-alive") {
+		m_aliveSockets.push_back(clientSocket);
+		m_selector.add(*clientSocket);
+	}
+	else {
+		clientSocket->disconnect();
+		delete clientSocket;
 	}
 }
 
