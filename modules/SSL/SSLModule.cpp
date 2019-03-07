@@ -24,10 +24,10 @@ SSLmod::~SSLmod()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool SSLmod::onReceive(Net::TcpSocket &/*sock*/, HTTP::Request &/*req*/)
+bool SSLmod::onReceive(Net::TcpSocket &sock, HTTP::Request &/*req*/)
 {
-  //  m_socket = sock.getHandle();
-  //  m_port = sock.getRemotePort();
+  m_socket = sock.getHandle();
+  m_port = sock.getRemotePort();
   // Init CTX 
   m_ctx = SSL_CTX_new(SSLv23_server_method());
   if (!m_ctx)

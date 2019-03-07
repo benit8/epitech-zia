@@ -5,3 +5,4 @@
 *.exe
 build/
 zia
+modules/SSL/CMakeFiles/
