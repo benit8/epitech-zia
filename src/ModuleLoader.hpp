@@ -35,6 +35,13 @@ class ModuleLoader;
 class ModuleLoader
 {
 public:
+	struct ModuleContainer
+	{
+		void *handle;
+		IModule *module;
+	};
+
+public:
 	ModuleLoader(const std::string &modulesPath = "./modules");
 	~ModuleLoader();
 
@@ -47,6 +54,5 @@ private:
 
 private:
 	std::string m_modulesPath;
-	std::map<std::string, void *> m_handles;
-	std::map<std::string, IModule *> m_modules;
+	std::map<std::string, ModuleContainer> m_mods;
 };

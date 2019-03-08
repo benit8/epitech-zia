@@ -16,14 +16,13 @@ ModuleLoader::ModuleLoader(const std::string &modulesPath)
 
 ModuleLoader::~ModuleLoader()
 {
-	for (auto &handle : m_handles) {
+	for (auto &mod : m_mods) {
 		void (*destructor)(void *);
-		*(void **)(&destructor) = dlsym(handle.second, "unloadModule");
-		(*destructor)(m_modules[handle.first]);
+		*(void **)(&destructor) = dlsym(mod.second.handle, "unloadModule");
+		(*destructor)(mod.second.module);
 
-		dlclose(handle.second);
-
-		std::cout << "Unloaded module '" << handle.first << "'" << std::endl;
+		dlclose(mod.second.handle);
+		std::cout << "Unloaded module '" << mod.first << "'" << std::endl;
 	}
 }
 
@@ -32,9 +31,9 @@ ModuleLoader::~ModuleLoader()
 IModule *ModuleLoader::loadModule(const std::string &moduleName)
 {
 	// Already loaded ?
-	auto it = m_modules.find(moduleName);
-	if (it != m_modules.end())
-		return it->second;
+	auto it = m_mods.find(moduleName);
+	if (it != m_mods.end())
+		return it->second.module;
 
 	// Load DL
 	std::string modulePath = makeModulePath(moduleName);
@@ -42,16 +41,16 @@ IModule *ModuleLoader::loadModule(const std::string &moduleName)
 	if (!handle)
 		throw std::runtime_error(std::string(dlerror()));
 
-	m_handles.emplace(moduleName, handle);
-
 	// Load constructor
 	IModule *(*constructor)();
 	*(void **)(&constructor) = dlsym(handle, "loadModule");
-	if (dlerror())
-		throw std::runtime_error("Constructor not found.\n" + std::string(dlerror()));
+	char *e = dlerror();
+	if (constructor == NULL || e)
+		throw std::runtime_error("Constructor not found.\n" + std::string(e));
 
 	IModule *mod = (*constructor)();
-	m_modules.emplace(moduleName, mod);
+	ModuleContainer c{handle, mod};
+	m_mods.emplace(moduleName, c);
 
 	return mod;
 }
@@ -71,5 +70,5 @@ void ModuleLoader::setModulesPath(const std::string &modulesPath)
 
 IModule *ModuleLoader::getModule(const std::string &name)
 {
-	return m_modules.find(name) != m_modules.end() ? m_modules[name] : nullptr;
+	return m_mods.find(name) != m_mods.end() ? m_mods[name].module : nullptr;
 }
