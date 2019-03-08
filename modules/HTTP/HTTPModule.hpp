@@ -29,12 +29,12 @@ namespace Modules
 		HTTPMod();
 		~HTTPMod();
 
-		bool onReceive(Net::TcpSocket *, std::string &);
+		bool onReceive(std::shared_ptr<Net::TcpSocket> , std::string &);
 		bool onParsing(const std::string &buffer, HTTP::Request &req);
-		bool onSend(Net::TcpSocket *, const std::string &);
+		bool onSend(std::shared_ptr<Net::TcpSocket> , const std::string &);
 
 		// Unused
-		bool onConnection(Net::TcpSocket *) { return false; }
+		bool onConnection(std::shared_ptr<Net::TcpSocket> ) { return false; }
 		bool onContentGen(HTTP::Request &, HTTP::Response &) { return false; }
 		bool checkModule() { return false; }
 	};

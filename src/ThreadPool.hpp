@@ -259,14 +259,14 @@ private:
 					return; // if the queue is empty and isDone == true or *flag then return
 			}
 		};
-		m_threads[i].reset(new std::thread(f)); // compiler may not support std::make_unique()
+		m_threads[i].reset(new std::thread(f));
 	}
 
 private:
 	std::vector<std::unique_ptr<std::thread>> m_threads;
 	std::vector<std::shared_ptr<std::atomic<bool>>> m_flags;
 	detail::Queue<std::function<void(int id)> *> m_q;
-	std::atomic<size_t> m_nWaiting;  // how many threads are waiting
+	std::atomic<size_t> m_nWaiting;
 	std::atomic<bool> m_isDone;
 	std::atomic<bool> m_isStop;
 

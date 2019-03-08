@@ -23,7 +23,7 @@ SSLmod::~SSLmod()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool SSLmod::onReceive(Net::TcpSocket *sock, std::string &/*buffer*/)
+bool SSLmod::onReceive(std::shared_ptr<Net::TcpSocket> sock, std::string &/*buffer*/)
 {
   m_socket = sock->getHandle();
   m_port = sock->getRemotePort();
@@ -49,7 +49,7 @@ bool SSLmod::onReceive(Net::TcpSocket *sock, std::string &/*buffer*/)
   return true;
 }
 
-bool	SSLmod::onSend(Net::TcpSocket */*sock*/, const std::string &/*buffer*/)
+bool	SSLmod::onSend(std::shared_ptr<Net::TcpSocket> /*sock*/, const std::string &/*buffer*/)
 {
   return true;
 }

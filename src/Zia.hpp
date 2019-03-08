@@ -23,6 +23,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <memory>
 #include <string>
 
 using json = nlohmann::json;
@@ -45,16 +46,16 @@ private:
 	bool parseHostAddress(const std::string &hostString, Net::IpAddress &address, std::uint16_t &port);
 	void handleNetworkEvent();
 	void handleListenerEvent(Net::TcpListener *listener);
-	void handleSocketEvent(Net::TcpSocket *socket, bool newCon = false);
+	void handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket);
 
-	bool onConnection(Net::TcpSocket *socket) {
+	bool onConnection(std::shared_ptr<Net::TcpSocket> socket) {
 		auto hook = m_hooks.find("Connection");
 		if (hook == m_hooks.end())
 			return false;
 		IModule *mod = m_moduleLoader.getModule(hook->second);
 		return mod == nullptr ? false : mod->onConnection(socket);
 	}
-	bool onReceive(Net::TcpSocket *socket, std::string &buffer) {
+	bool onReceive(std::shared_ptr<Net::TcpSocket> socket, std::string &buffer) {
 		auto hook = m_hooks.find("Receive");
 		if (hook == m_hooks.end())
 			return false;
@@ -75,7 +76,7 @@ private:
 		IModule *mod = m_moduleLoader.getModule(hook->second);
 		return mod == nullptr ? false : mod->onContentGen(req, res);
 	}
-	bool onSend(Net::TcpSocket *socket, std::string &buffer) {
+	bool onSend(std::shared_ptr<Net::TcpSocket> socket, std::string &buffer) {
 		auto hook = m_hooks.find("Send");
 		if (hook == m_hooks.end())
 			return false;
@@ -95,7 +96,7 @@ private:
 	bool m_running;
 	Net::SocketSelector m_selector;
 	std::map<Net::TcpListener *, json> m_hosts;
-	std::list<Net::TcpSocket *> m_aliveSockets;
+	std::list<std::shared_ptr<Net::TcpSocket>> m_aliveSockets;
 	std::map<std::string, std::string> m_hooks;
 	ThreadPool m_workers;
 

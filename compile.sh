@@ -22,10 +22,12 @@ if [ -f ./zia ]; then
 	rm ./zia
 fi
 
+ncore=$(echo "`grep -c ^processor /proc/cpuinfo`+1" | bc)
+
 mkdir ./build && cd ./build &&
 conan install .. --build=missing &&
 cmake .. -G "Unix Makefiles" &&
-cmake --build . -- -j 5 &&
+cmake --build . -- -j "$ncore" &&
 make &&
 
 # we still in ./build

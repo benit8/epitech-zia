@@ -25,7 +25,7 @@ HTTPMod::~HTTPMod()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool HTTPMod::onReceive(Net::TcpSocket *socket, std::string &rawReq)
+bool HTTPMod::onReceive(std::shared_ptr<Net::TcpSocket> socket, std::string &rawReq)
 {
 	const std::size_t readSize = 1024;
 
@@ -35,7 +35,7 @@ bool HTTPMod::onReceive(Net::TcpSocket *socket, std::string &rawReq)
 		std::size_t received = 0;
 		Net::Socket::Status s = socket->receive(buffer, readSize, received);
 		if (s != Net::Socket::Done) {
-			std::cerr << "Data reception failed (" << s << ")" << std::endl;
+			std::cerr << "Data reception failed (" << s << ") " << *socket << std::endl;
 			return false;
 		}
 
@@ -45,7 +45,7 @@ bool HTTPMod::onReceive(Net::TcpSocket *socket, std::string &rawReq)
 			break;
 	}
 
-	std::cout << ">> Received " << rawReq.length() << " bytes" << std::endl << rawReq;
+	std::cout << ">> Received " << rawReq.length() << " bytes " << *socket << std::endl << rawReq;
 
 	return true;
 }
@@ -55,9 +55,9 @@ bool HTTPMod::onParsing(const std::string &buffer, HTTP::Request &req)
 	return req.parseRequest(buffer);
 }
 
-bool HTTPMod::onSend(Net::TcpSocket *socket, const std::string &buffer)
+bool HTTPMod::onSend(std::shared_ptr<Net::TcpSocket> socket, const std::string &buffer)
 {
-	std::cout << "<< Sending " << buffer.length() << " bytes" << std::endl << buffer << std::endl << std::endl;
+	std::cout << "<< Sending " << buffer.length() << " bytes " << *socket << std::endl << buffer << std::endl << std::endl;
 
 	return socket->send(buffer.c_str(), buffer.length()) != Net::Socket::Done;
 }
