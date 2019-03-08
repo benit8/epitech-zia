@@ -18,8 +18,7 @@ class SSLmod;
 #include <openssl/bio.h>
 #include <openssl/opensslv.h>
 
-#include "../../common/Export.hpp"
-#include "../../common/Module.hpp"
+#include "Module.hpp"
 #include "./Colors.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +26,7 @@ class SSLmod;
 class EXPORT SSLmod : public AModule
 {
 public:
-	SSLmod();
+	SSLmod(ModuleLoader *ml);
 	~SSLmod();
 
 	bool	onReceive(std::shared_ptr<Net::TcpSocket> socket, std::string &buffer);
@@ -36,7 +35,7 @@ public:
 
 	// Unused
 	bool	onParsing(const std::string &, HTTP::Request &) { return false; }
-	bool	onConnection(std::shared_ptr<Net::TcpSocket> ) { return false; }
+	bool	onConnection(std::shared_ptr<Net::TcpSocket>) { return false; }
 	bool	onContentGen(HTTP::Request &, HTTP::Response &) { return false; }
 
 private:

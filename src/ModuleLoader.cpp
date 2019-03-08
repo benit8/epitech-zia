@@ -42,13 +42,13 @@ IModule *ModuleLoader::loadModule(const std::string &moduleName)
 		throw std::runtime_error(std::string(dlerror()));
 
 	// Load constructor
-	IModule *(*constructor)();
+	IModule *(*constructor)(ModuleLoader *);
 	*(void **)(&constructor) = dlsym(handle, "loadModule");
 	char *e = dlerror();
 	if (constructor == NULL || e)
 		throw std::runtime_error("Constructor not found.\n" + std::string(e));
 
-	IModule *mod = (*constructor)();
+	IModule *mod = (*constructor)(this);
 	ModuleContainer c{handle, mod};
 	m_mods.emplace(moduleName, c);
 

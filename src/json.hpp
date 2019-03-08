@@ -20462,7 +20462,7 @@ class basic_json
 
     /// @}
 };
-} // namespace nlohmann
+}
 
 ///////////////////////
 // nonmember support //

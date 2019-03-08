@@ -14,12 +14,9 @@ add_definitions("-lssl -lcrypto -ldl")
 add_definitions("-L/usr/lib")
 
 set(SOURCES
-	../../common/Export.hpp
-	../../common/Module.hpp
-	SSLModule.hpp
 	SSLModule.cpp
 )
 
 add_library(${MODULE_NAME} SHARED ${SOURCES})
 target_link_libraries(${MODULE_NAME} ssl crypto)
-target_include_directories(${MODULE_NAME} PUBLIC ../../common/)
+target_include_directories(${MODULE_NAME} PUBLIC ../../src/)

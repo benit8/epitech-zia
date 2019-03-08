@@ -12,11 +12,8 @@ add_definitions("-fPIC")
 add_definitions("-W -Wall -Wextra")
 
 set(SOURCES
-	../../common/Export.hpp
-	../../common/Module.hpp
-	HTTPModule.hpp
 	HTTPModule.cpp
 )
 
 add_library(${MODULE_NAME} SHARED ${SOURCES})
-target_include_directories(${MODULE_NAME} PUBLIC ../../common/)
+target_include_directories(${MODULE_NAME} PUBLIC ../../src/)

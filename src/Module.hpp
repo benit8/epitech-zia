@@ -14,7 +14,10 @@ class AModule;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "json.hpp"
+#include "Export.hpp"
 #include "HTTP.hpp"
+#include "ModuleLoader.hpp"
 #include "Network/TcpSocket.hpp"
 
 #include <string>
@@ -41,8 +44,9 @@ public:
 class AModule : public IModule
 {
 public:
-	AModule(const std::string &name)
-	: m_name(name)
+	AModule(ModuleLoader *ml, const std::string &name)
+	: m_ml(ml)
+	, m_name(name)
 	{}
 
 	virtual ~AModule()
@@ -51,6 +55,7 @@ public:
 public:
 	const std::string &getName() { return m_name; }
 
-private:
+protected:
+	ModuleLoader *m_ml;
 	std::string m_name;
 };

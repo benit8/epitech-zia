@@ -26,7 +26,7 @@
 #include <memory>
 #include <string>
 
-using json = nlohmann::json;
+using namespace nlohmann;
 
 ////////////////////////////////////////////////////////////////////////////////
 

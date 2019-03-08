@@ -1,13 +1,13 @@
 {
 	"Modules": {
 		"Path": "modules",
-		"List": ["Test", "HTTP", "SSL"]
+		"List": ["HTTP", "SSL"]
 	},
 	"Hooks": {
 		"Connection": "",
 		"Receive": "HTTP",
 		"Parsing": "HTTP",
-		"ContentGen": "Test",
+		"ContentGen": "HTTP",
 		"Send": "HTTP"
 	},
 	"Hosts": [

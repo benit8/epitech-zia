@@ -9,8 +9,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-SSLmod::SSLmod()
-  : AModule("SSL")
+SSLmod::SSLmod(ModuleLoader *ml)
+  : AModule(ml, "SSL")
 {
   // Load openssl modules
   OPENSSL_init_ssl(0, NULL);
@@ -89,9 +89,9 @@ bool	SSLmod::checkModule()
 
 extern "C"
 {
-  IModule *loadModule()
+  IModule *loadModule(ModuleLoader *ml)
   {
-    return new SSLmod();
+    return new SSLmod(ml);
   }
 
   void unloadModule(SSLmod *mod)

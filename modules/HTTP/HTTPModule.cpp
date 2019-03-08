@@ -14,8 +14,8 @@ namespace Modules
 
 ////////////////////////////////////////////////////////////////////////////////
 
-HTTPMod::HTTPMod()
-: AModule("HTTP")
+HTTPMod::HTTPMod(ModuleLoader *ml)
+: AModule(ml, "HTTP")
 {
 }
 
@@ -55,6 +55,15 @@ bool HTTPMod::onParsing(const std::string &buffer, HTTP::Request &req)
 	return req.parseRequest(buffer);
 }
 
+bool HTTPMod::onContentGen(HTTP::Request &req, HTTP::Response &res)
+{
+	res.status(HTTP::Response::Ok);
+	res["Content-Type"] = "text/html";
+	res.body("<!DOCTYPE html><html><head><meta charset=\"UTF-8\" /><title>Zia | " + req["Host"] + "</title></head><body><h1>Hello World!</h1><h2>from " + req["Host"] + "</h2></body></html>");
+
+	return true;
+}
+
 bool HTTPMod::onSend(std::shared_ptr<Net::TcpSocket> socket, const std::string &buffer)
 {
 	std::cout << "<< Sending " << buffer.length() << " bytes " << *socket << std::endl << buffer << std::endl << std::endl;
@@ -70,9 +79,9 @@ bool HTTPMod::onSend(std::shared_ptr<Net::TcpSocket> socket, const std::string &
 
 extern "C"
 {
-	IModule *loadModule()
+	IModule *loadModule(ModuleLoader *ml)
 	{
-		return new Modules::HTTPMod();
+		return new Modules::HTTPMod(ml);
 	}
 
 	void unloadModule(Modules::HTTPMod *mod)
