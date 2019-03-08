@@ -7,6 +7,8 @@
 
 #include "Zia.hpp"
 
+using namespace std::placeholders;
+
 ////////////////////////////////////////////////////////////////////////////////
 
 std::list<Zia *> Zia::s_instances;
@@ -81,6 +83,7 @@ int Zia::run()
 	}
 
 	for (auto &sock : m_aliveSockets) {
+		std::cout << "deleting socket" << std::endl;
 		m_selector.remove(*sock);
 		sock->disconnect();
 		delete sock;
@@ -144,26 +147,33 @@ void Zia::handleNetworkEvent()
 		if (m_selector.isReady(*host.first))
 			handleListenerEvent(host.first);
 	}
+	for (Net::TcpSocket *socket : m_aliveSockets) {
+		if (m_selector.isReady(*socket))
+			m_workers.push([&](int, Net::TcpSocket *sock) { handleSocketEvent(sock); }, socket);
+	}
 }
 
 void Zia::handleListenerEvent(Net::TcpListener *listener)
 {
-	Net::TcpSocket *clientSocket = new Net::TcpSocket;
-	Net::Socket::Status status = listener->accept(*clientSocket);
+	Net::TcpSocket *socket = new Net::TcpSocket;
+	Net::Socket::Status status = listener->accept(*socket);
 	if (status != Net::Socket::Done) {
 		std::cerr << "-- Failed to accept new client: (" << status << ")" << std::endl;
-		delete clientSocket;
+		delete socket;
 		return;
 	}
 	else {
-		std::cout << "++ Connection from " << *clientSocket << std::endl;
+		std::cout << "++ Connection from " << *socket << std::endl;
 	}
 
-	////////////////////////////////////////////////////////////////////////
+	m_workers.push([&](int, Net::TcpSocket *sock) { handleSocketEvent(sock, true); }, socket);
+}
 
-	if (!onConnection(clientSocket)) {
-		if (clientSocket->getRemoteAddress() == Net::IpAddress::None) {
-			delete clientSocket;
+void Zia::handleSocketEvent(Net::TcpSocket *socket, bool newCon)
+{
+	if (newCon && !onConnection(socket)) {
+		if (socket->getRemoteAddress() == Net::IpAddress::None) {
+			delete socket;
 			return;
 		}
 	}
@@ -171,9 +181,9 @@ void Zia::handleListenerEvent(Net::TcpListener *listener)
 	////////////////////////////////////////////////////////////////////////
 
 	std::string buffer;
-	if (!onReceive(clientSocket, buffer)) {
-		clientSocket->disconnect();
-		delete clientSocket;
+	if (!onReceive(socket, buffer)) {
+		socket->disconnect();
+		delete socket;
 		return;
 	}
 
@@ -190,15 +200,19 @@ void Zia::handleListenerEvent(Net::TcpListener *listener)
 	////////////////////////////////////////////////////////////////////////
 
 	std::string rawRes = res.prepare();
-	onSend(clientSocket, rawRes);
+	onSend(socket, rawRes);
 
-	if (req["Connection"] == "keep-alive") {
-		m_aliveSockets.push_back(clientSocket);
-		m_selector.add(*clientSocket);
-	}
-	else {
-		clientSocket->disconnect();
-		delete clientSocket;
+	////////////////////////////////////////////////////////////////////////
+
+	if (!newCon) {
+		if (req["Connection"] == "keep-alive") {
+			m_aliveSockets.push_back(socket);
+			m_selector.add(*socket);
+		}
+		else {
+			socket->disconnect();
+			delete socket;
+		}
 	}
 }
 

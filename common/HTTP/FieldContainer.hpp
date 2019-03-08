@@ -39,7 +39,7 @@ public:
 	const std::string &getField(const std::string &key) { return m_fields[key]; }
 	void defaultField(const std::string &key, const std::string &value) { if (!hasField(key)) setField(key, value); }
 
-	std::string operator [](const std::string &key) { return m_fields[key]; }
+	std::string &operator [](const std::string &key) { return m_fields[key]; }
 
 protected:
 	void parseFields(std::istringstream &iss);

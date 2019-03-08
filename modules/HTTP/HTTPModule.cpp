@@ -27,7 +27,7 @@ HTTPMod::~HTTPMod()
 
 bool HTTPMod::onReceive(Net::TcpSocket *socket, std::string &rawReq)
 {
-	const std::size_t readSize = 128;
+	const std::size_t readSize = 1024;
 
 	std::size_t length = 0;
 	for (;;) {

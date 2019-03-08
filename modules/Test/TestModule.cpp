@@ -29,7 +29,7 @@ bool Test::onContentGen(HTTP::Request &req, HTTP::Response &res)
 {
 	res.status(HTTP::Response::Ok);
 	res["Content-Type"] = "text/html";
-	res.body("<!DOCTYPE html><html><head><meta charset=\"UTF-8\" /><title>Zia | " + req["Host"] + "</title></head><body><h1>Hello World!</h1></body></html>");
+	res.body("<!DOCTYPE html><html><head><meta charset=\"UTF-8\" /><title>Zia | " + req["Host"] + "</title></head><body><h1>Hello World!</h1><h2>from " + req["Host"] + "</h2></body></html>");
 
 	return true;
 }

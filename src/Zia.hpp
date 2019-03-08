@@ -19,10 +19,10 @@
 
 #include <algorithm>
 #include <csignal>
-#include <list>
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <map>
 #include <string>
 
 using json = nlohmann::json;
@@ -45,6 +45,7 @@ private:
 	bool parseHostAddress(const std::string &hostString, Net::IpAddress &address, std::uint16_t &port);
 	void handleNetworkEvent();
 	void handleListenerEvent(Net::TcpListener *listener);
+	void handleSocketEvent(Net::TcpSocket *socket, bool newCon = false);
 
 	bool onConnection(Net::TcpSocket *socket) {
 		auto hook = m_hooks.find("Connection");
@@ -94,7 +95,7 @@ private:
 	bool m_running;
 	Net::SocketSelector m_selector;
 	std::map<Net::TcpListener *, json> m_hosts;
-	std::vector<Net::TcpSocket *> m_aliveSockets;
+	std::list<Net::TcpSocket *> m_aliveSockets;
 	std::map<std::string, std::string> m_hooks;
 	ThreadPool m_workers;
 
