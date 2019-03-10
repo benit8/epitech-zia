@@ -45,43 +45,43 @@ private:
 	bool createListener(const json &host, const std::string &address);
 	bool parseHostAddress(const std::string &hostString, Net::IpAddress &address, std::uint16_t &port);
 	void handleNetworkEvent();
-	void handleListenerEvent(Net::TcpListener *listener);
-	void handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket);
+	void handleListenerEvent(Net::TcpListener *listener, const json &host);
+	void handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket, const json &host);
 
-	bool onConnection(std::shared_ptr<Net::TcpSocket> socket) {
+	bool onConnection(const json &host, std::shared_ptr<Net::TcpSocket> socket) {
 		auto hook = m_hooks.find("Connection");
 		if (hook == m_hooks.end())
 			return false;
 		IModule *mod = m_moduleLoader.getModule(hook->second);
-		return mod == nullptr ? false : mod->onConnection(socket);
+		return mod == nullptr ? false : mod->onConnection(host, socket);
 	}
-	bool onReceive(std::shared_ptr<Net::TcpSocket> socket, std::string &buffer) {
+	bool onReceive(const json &host, std::shared_ptr<Net::TcpSocket> socket, std::string &buffer) {
 		auto hook = m_hooks.find("Receive");
 		if (hook == m_hooks.end())
 			return false;
 		IModule *mod = m_moduleLoader.getModule(hook->second);
-		return mod == nullptr ? false : mod->onReceive(socket, buffer);
+		return mod == nullptr ? false : mod->onReceive(host, socket, buffer);
 	}
-	bool onParsing(std::string &buffer, HTTP::Request &req) {
+	bool onParsing(const json &host, std::string &buffer, HTTP::Request &req) {
 		auto hook = m_hooks.find("Parsing");
 		if (hook == m_hooks.end())
 			return false;
 		IModule *mod = m_moduleLoader.getModule(hook->second);
-		return mod == nullptr ? false : mod->onParsing(buffer, req);
+		return mod == nullptr ? false : mod->onParsing(host, buffer, req);
 	}
-	bool onContentGen(HTTP::Request &req, HTTP::Response &res) {
+	bool onContentGen(const json &host, HTTP::Request &req, HTTP::Response &res) {
 		auto hook = m_hooks.find("ContentGen");
 		if (hook == m_hooks.end())
 			return false;
 		IModule *mod = m_moduleLoader.getModule(hook->second);
-		return mod == nullptr ? false : mod->onContentGen(req, res);
+		return mod == nullptr ? false : mod->onContentGen(host, req, res);
 	}
-	bool onSend(std::shared_ptr<Net::TcpSocket> socket, std::string &buffer) {
+	bool onSend(const json &host, std::shared_ptr<Net::TcpSocket> socket, std::string &buffer) {
 		auto hook = m_hooks.find("Send");
 		if (hook == m_hooks.end())
 			return false;
 		IModule *mod = m_moduleLoader.getModule(hook->second);
-		return mod == nullptr ? false : mod->onSend(socket, buffer);
+		return mod == nullptr ? false : mod->onSend(host, socket, buffer);
 	}
 
 	static void dispatchSignal(int signum);
@@ -96,7 +96,7 @@ private:
 	bool m_running;
 	Net::SocketSelector m_selector;
 	std::map<Net::TcpListener *, json> m_hosts;
-	std::list<std::shared_ptr<Net::TcpSocket>> m_aliveSockets;
+	std::map<std::shared_ptr<Net::TcpSocket>, json> m_aliveSockets;
 	std::map<std::string, std::string> m_hooks;
 	ThreadPool m_workers;
 

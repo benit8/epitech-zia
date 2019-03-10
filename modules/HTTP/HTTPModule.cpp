@@ -25,10 +25,22 @@ HTTPMod::~HTTPMod()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool HTTPMod::onReceive(std::shared_ptr<Net::TcpSocket> socket, std::string &rawReq)
+bool HTTPMod::onReceive(const json &host, std::shared_ptr<Net::TcpSocket> socket, std::string &rawReq)
 {
-	const std::size_t readSize = 1024;
+	rawReq.clear();
 
+	// Do we use SSL ?
+	if (host.count("SSL") > 0 && host["SSL"].is_object()) {
+		IModule *ssl = m_ml->getModule("SSL");
+		if (ssl == nullptr) {
+			std::cerr << "HTTPMod::onReceive(): Could not get SSL module" << std::endl;
+			return false;
+		}
+		return ssl->onReceive(host, socket, rawReq);
+	}
+
+	// Normal read
+	const std::size_t readSize = 1024;
 	std::size_t length = 0;
 	for (;;) {
 		char buffer[readSize] = {0};
@@ -50,12 +62,12 @@ bool HTTPMod::onReceive(std::shared_ptr<Net::TcpSocket> socket, std::string &raw
 	return true;
 }
 
-bool HTTPMod::onParsing(const std::string &buffer, HTTP::Request &req)
+bool HTTPMod::onParsing(const json &/*host*/, const std::string &buffer, HTTP::Request &req)
 {
 	return req.parseRequest(buffer);
 }
 
-bool HTTPMod::onContentGen(HTTP::Request &req, HTTP::Response &res)
+bool HTTPMod::onContentGen(const json& /*host*/, HTTP::Request &req, HTTP::Response &res)
 {
 	res.status(HTTP::Response::Ok);
 	res["Content-Type"] = "text/html";
@@ -64,10 +76,20 @@ bool HTTPMod::onContentGen(HTTP::Request &req, HTTP::Response &res)
 	return true;
 }
 
-bool HTTPMod::onSend(std::shared_ptr<Net::TcpSocket> socket, const std::string &buffer)
+bool HTTPMod::onSend(const json &host, std::shared_ptr<Net::TcpSocket> socket, const std::string &buffer)
 {
-	std::cout << "<< Sending " << buffer.length() << " bytes " << *socket << std::endl << buffer << std::endl << std::endl;
+	// Do we use SSL ?
+	if (host.count("SSL") > 0 && host["SSL"].is_object()) {
+		IModule *ssl = m_ml->getModule("SSL");
+		if (ssl == nullptr) {
+			std::cerr << "HTTPMod::onSend(): Could not get SSL module" << std::endl;
+			return false;
+		}
+		return ssl->onSend(host, socket, buffer);
+	}
 
+	// Normal send
+	std::cout << "<< Sending " << buffer.length() << " bytes " << *socket << std::endl << buffer << std::endl << std::endl;
 	return socket->send(buffer.c_str(), buffer.length()) != Net::Socket::Done;
 }
 

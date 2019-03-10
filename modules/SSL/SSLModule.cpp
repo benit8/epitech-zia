@@ -23,8 +23,19 @@ SSLmod::~SSLmod()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool SSLmod::onReceive(std::shared_ptr<Net::TcpSocket> sock, std::string &/*buffer*/)
+bool SSLmod::onReceive(const json& host, std::shared_ptr<Net::TcpSocket> sock, std::string &/*buffer*/)
 {
+  /*
+  ** Un exemple d'utilisation du `const json &host`:
+  ** ---------------------------------------------------------------------------
+  ** std::string certFile = host["SSL"]["Cert"].get<std::string>();
+  ** std::string keyFile = host["SSL"]["Key"].get<std::string>();
+  **  ...
+  ** SSL_CTX_use_certificate_file(m_ctx, certFile.c_str(), SSL_FILETYPE_PEM)
+  ** SSL_CTX_use_PrivateKey_file(m_ctx, keyFile.c_str(), SSL_FILETYPE_PEM)
+  ** ---------------------------------------------------------------------------
+  */
+
   m_socket = sock->getHandle();
   m_port = sock->getRemotePort();
   // Init CTX
@@ -49,7 +60,7 @@ bool SSLmod::onReceive(std::shared_ptr<Net::TcpSocket> sock, std::string &/*buff
   return true;
 }
 
-bool	SSLmod::onSend(std::shared_ptr<Net::TcpSocket> /*sock*/, const std::string &/*buffer*/)
+bool	SSLmod::onSend(const json& /*host*/, std::shared_ptr<Net::TcpSocket> /*sock*/, const std::string &/*buffer*/)
 {
   return true;
 }

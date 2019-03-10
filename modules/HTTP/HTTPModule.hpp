@@ -28,13 +28,13 @@ namespace Modules
 		HTTPMod(ModuleLoader *ml);
 		~HTTPMod();
 
-		bool onReceive(std::shared_ptr<Net::TcpSocket> , std::string &);
-		bool onParsing(const std::string &buffer, HTTP::Request &req);
-		bool onContentGen(HTTP::Request &req, HTTP::Response &res);
-		bool onSend(std::shared_ptr<Net::TcpSocket> , const std::string &);
+		bool onReceive(const json &host, std::shared_ptr<Net::TcpSocket>, std::string &);
+		bool onParsing(const json &host, const std::string &buffer, HTTP::Request &req);
+		bool onContentGen(const json &host, HTTP::Request &req, HTTP::Response &res);
+		bool onSend(const json &host, std::shared_ptr<Net::TcpSocket>, const std::string &);
 
 		// Unused
-		bool onConnection(std::shared_ptr<Net::TcpSocket> ) { return false; }
+		bool onConnection(const json &, std::shared_ptr<Net::TcpSocket>) { return false; }
 		bool checkModule() { return false; }
 	};
 

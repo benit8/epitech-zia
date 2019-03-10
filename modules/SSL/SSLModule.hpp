@@ -29,14 +29,14 @@ public:
 	SSLmod(ModuleLoader *ml);
 	~SSLmod();
 
-	bool	onReceive(std::shared_ptr<Net::TcpSocket> socket, std::string &buffer);
-	bool	onSend(std::shared_ptr<Net::TcpSocket> socket, const std::string &buffer);
+	bool	onReceive(const json &host, std::shared_ptr<Net::TcpSocket> socket, std::string &buffer);
+	bool	onSend(const json &host, std::shared_ptr<Net::TcpSocket> socket, const std::string &buffer);
 	bool	checkModule();
 
 	// Unused
-	bool	onParsing(const std::string &, HTTP::Request &) { return false; }
-	bool	onConnection(std::shared_ptr<Net::TcpSocket>) { return false; }
-	bool	onContentGen(HTTP::Request &, HTTP::Response &) { return false; }
+	bool	onParsing(const json &, const std::string &, HTTP::Request &) { return false; }
+	bool	onConnection(const json &, std::shared_ptr<Net::TcpSocket>) { return false; }
+	bool	onContentGen(const json &, HTTP::Request &, HTTP::Response &) { return false; }
 
 private:
 	SSL_CTX		*m_ctx;

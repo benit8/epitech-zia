@@ -20,9 +20,10 @@
 			"Address": ["*:4433"],
 			"Name": "a.zia",
 			"Root": "www/a",
-			"SSLEngine": "On",
-			"SSLCert": "",
-			"SSLKey": ""
+			"SSL": {
+				"Cert": "certs/cert.pem",
+				"Key": "certs/key.pem"
+			}
 		},
 		{
 			"Address": ["*:8081"],

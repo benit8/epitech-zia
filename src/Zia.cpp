@@ -77,8 +77,8 @@ int Zia::run()
 	}
 
 	for (auto &sock : m_aliveSockets) {
-		m_selector.remove(*sock);
-		sock->disconnect();
+		m_selector.remove(*(sock.first));
+		sock.first->disconnect();
 	}
 
 	for (auto &host : m_hosts) {
@@ -145,24 +145,24 @@ void Zia::handleNetworkEvent()
 {
 	for (auto &host : m_hosts) {
 		if (m_selector.isReady(*host.first))
-			handleListenerEvent(host.first);
+			handleListenerEvent(host.first, host.second);
 	}
 	for (auto &socket : m_aliveSockets) {
-		if (m_selector.isReady(*socket)) {
-			if (socket->getRemoteAddress() == Net::IpAddress::None) {
-				m_selector.remove(*socket);
-				m_aliveSockets.remove(socket);
+		if (m_selector.isReady(*(socket.first))) {
+			if (socket.first->getRemoteAddress() == Net::IpAddress::None) {
+				m_selector.remove(*(socket.first));
+				m_aliveSockets.erase(socket.first);
 			}
 			else {
-				m_workers.push([&](int, std::shared_ptr<Net::TcpSocket> sock) {
-					handleSocketEvent(sock);
-				}, socket);
+				m_workers.push([&](int, std::shared_ptr<Net::TcpSocket> sock, const json &host) {
+					handleSocketEvent(sock, host);
+				}, socket.first, socket.second);
 			}
 		}
 	}
 }
 
-void Zia::handleListenerEvent(Net::TcpListener *listener)
+void Zia::handleListenerEvent(Net::TcpListener *listener, const json &host)
 {
 	std::shared_ptr<Net::TcpSocket> socket = std::make_shared<Net::TcpSocket>();
 	Net::Socket::Status status = listener->accept(*socket);
@@ -174,22 +174,22 @@ void Zia::handleListenerEvent(Net::TcpListener *listener)
 		std::cout << "++ Connection from " << *socket << std::endl;
 	}
 
-	if (!onConnection(socket)) {
+	if (!onConnection(host, socket)) {
 		// If we block the socket (by disconnecting it)
 		if (socket->getRemoteAddress() == Net::IpAddress::None)
 			return;
 	}
 
-	m_aliveSockets.push_back(socket);
+	m_aliveSockets.emplace(socket, host);
 	m_selector.add(*socket);
 }
 
-void Zia::handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket)
+void Zia::handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket, const json &host)
 {
 	std::string buffer;
-	if (!onReceive(socket, buffer)) {
+	if (!onReceive(host, socket, buffer)) {
 		m_selector.remove(*socket);
-		m_aliveSockets.remove(socket);
+		m_aliveSockets.erase(socket);
 		socket->disconnect();
 		return;
 	}
@@ -198,22 +198,22 @@ void Zia::handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket)
 
 	HTTP::Request req;
 	HTTP::Response res;
-	onParsing(buffer, req);
+	onParsing(host, buffer, req);
 
 	////////////////////////////////////////////////////////////////////////
 
-	onContentGen(req, res);
+	onContentGen(host, req, res);
 
 	////////////////////////////////////////////////////////////////////////
 
 	std::string rawRes = res.prepare();
-	onSend(socket, rawRes);
+	onSend(host, socket, rawRes);
 
 	////////////////////////////////////////////////////////////////////////
 
 	if (req["Connection"] == "close") {
 		m_selector.remove(*socket);
-		m_aliveSockets.remove(socket);
+		m_aliveSockets.erase(socket);
 		socket->disconnect();
 	}
 }
