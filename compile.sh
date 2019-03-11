@@ -28,8 +28,6 @@ mkdir ./build && cd ./build &&
 conan install .. --build=missing &&
 cmake .. -G "Unix Makefiles" &&
 cmake --build . -- -j "$ncore" &&
-make &&
 
 # we still in ./build
-cp ./lib/*.so ../modules/ &&
-cp ./bin/zia ../
+cp ./lib/*.so ../modules/ ; cp ./bin/zia ../
