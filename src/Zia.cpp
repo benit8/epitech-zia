@@ -39,7 +39,7 @@ void Zia::loadConfig()
 {
 	std::ifstream ifs(m_configFilename);
 	if (!ifs.is_open())
-		std::cerr << "Failed to open configuration file '" << m_configFilename << "'" << std::endl;
+		Logger::error() << "Failed to open configuration file '" << m_configFilename << "'" << std::endl;
 	else
 		ifs >> m_config;
 }
@@ -52,10 +52,10 @@ void Zia::loadModules()
 	for (auto it = moduleNames.begin(); it != moduleNames.end(); ++it) {
 		try {
 			m_moduleLoader.loadModule(*it);
-			std::cout << "Module '" << *it << "' loaded" << std::endl;
+			Logger::info() << "Module '" << *it << "' loaded" << std::endl;
 		}
 		catch (std::runtime_error &e) {
-			std::cerr << "Failed to load module '" << *it << "': " << e.what() << std::endl;
+			Logger::error() << "Failed to load module '" << *it << "': " << e.what() << std::endl;
 		}
 	}
 
@@ -94,18 +94,18 @@ int Zia::run()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool Zia::createListener(const json &host, const std::string &address)
+bool Zia::createListener(json &host, const std::string &address)
 {
 	Net::IpAddress addr;
 	std::uint16_t port;
 	if (!parseHostAddress(address, addr, port)) {
-		std::cerr << "Invalid address '" << address << "' in host " << host["Name"] << std::endl;
+		Logger::error() << "Invalid address '" << address << "' in host " << host["Name"] << std::endl;
 		return false;
 	}
 
 	Net::TcpListener *listener = new Net::TcpListener;
 	if (listener->listen(port, addr) != Net::Socket::Done) {
-		std::cerr << "Failed to listen to " << address << std::endl;
+		Logger::error() << "Failed to listen to " << address << std::endl;
 		delete listener;
 		return false;
 	}
@@ -113,7 +113,7 @@ bool Zia::createListener(const json &host, const std::string &address)
 	m_selector.add(*listener);
 	m_hosts[listener].push_back(host);
 
-	std::cout << "Listening to " << address << " for " << host["Name"] << std::endl;
+	Logger::info() << "Listening to " << address << " for " << host["Name"] << std::endl;
 	return true;
 }
 
@@ -135,7 +135,7 @@ bool Zia::parseHostAddress(const std::string &hostString, Net::IpAddress &addres
 
 	port = std::stoi(match[2]);
 	if (port == 0) {
-		std::cout << "Warning: port 0 used" << std::endl;
+		Logger::warning() << "Warning: port 0 used" << std::endl;
 	}
 
 	return true;
@@ -144,8 +144,9 @@ bool Zia::parseHostAddress(const std::string &hostString, Net::IpAddress &addres
 void Zia::handleNetworkEvent()
 {
 	for (auto &host : m_hosts) {
-		if (m_selector.isReady(*host.first))
-			handleListenerEvent(host.first, host.second);
+		if (m_selector.isReady(*host.first)) {
+			handleListenerEvent(host.first, host.second[0]);
+		}
 	}
 	for (auto &socket : m_aliveSockets) {
 		if (m_selector.isReady(*(socket.first))) {
@@ -154,7 +155,7 @@ void Zia::handleNetworkEvent()
 				m_aliveSockets.erase(socket.first);
 			}
 			else {
-				m_workers.push([&](int, std::shared_ptr<Net::TcpSocket> sock, const json &host) {
+				m_workers.push([&](int, std::shared_ptr<Net::TcpSocket> sock, json &host) {
 					handleSocketEvent(sock, host);
 				}, socket.first, socket.second);
 			}
@@ -162,16 +163,16 @@ void Zia::handleNetworkEvent()
 	}
 }
 
-void Zia::handleListenerEvent(Net::TcpListener *listener, const json &host)
+void Zia::handleListenerEvent(Net::TcpListener *listener, json &host)
 {
 	std::shared_ptr<Net::TcpSocket> socket = std::make_shared<Net::TcpSocket>();
 	Net::Socket::Status status = listener->accept(*socket);
 	if (status != Net::Socket::Done) {
-		std::cerr << "-- Failed to accept new client: (" << status << ")" << std::endl;
+		Logger::warning() << "-- Failed to accept new client: (" << status << ")" << std::endl;
 		return;
 	}
 	else {
-		std::cout << "++ Connection from " << *socket << std::endl;
+		Logger::info() << "++ Connection from " << *socket << std::endl;
 	}
 
 	if (!onConnection(host, socket)) {
@@ -184,7 +185,7 @@ void Zia::handleListenerEvent(Net::TcpListener *listener, const json &host)
 	m_selector.add(*socket);
 }
 
-void Zia::handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket, const json &host)
+void Zia::handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket, json &host)
 {
 	std::string buffer;
 	if (!onReceive(host, socket, buffer)) {
@@ -228,6 +229,6 @@ void Zia::dispatchSignal(int signum)
 void Zia::handleSignal(int signum)
 {
 	std::cout << std::endl;
-	std::cout << "Caught signal " << signum << ": " << strsignal(signum) << std::endl;
+	Logger::warning() << "Caught signal " << signum << ": " << strsignal(signum) << std::endl;
 	m_running = false;
 }

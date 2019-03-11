@@ -57,6 +57,9 @@ public:
 	const std::string &method() const { return m_method; }
 	const std::string &host() const { return m_host; }
 	std::uint16_t port() const { return m_port; }
+	const std::string &uri() const { return m_uri; }
+	const std::string &url() const { return m_url; }
+	const std::string &query() const { return m_query; }
 
 
 private:

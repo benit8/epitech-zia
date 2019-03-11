@@ -1,13 +1,13 @@
 {
 	"Modules": {
 		"Path": "modules",
-		"List": ["HTTP", "SSL"]
+		"List": ["HTTP", "SSL", "FileServe"]
 	},
 	"Hooks": {
 		"Connection": "",
 		"Receive": "HTTP",
 		"Parsing": "HTTP",
-		"ContentGen": "HTTP",
+		"ContentGen": "FileServe",
 		"Send": "HTTP"
 	},
 	"Hosts": [

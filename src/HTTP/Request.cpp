@@ -6,6 +6,7 @@
 */
 
 #include "Request.hpp"
+#include "Logger.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +72,7 @@ bool Request::parseRequest(const std::string &data)
 
 	iss >> m_method;
 	if (std::find(validMethods.begin(), validMethods.end(), m_method) == validMethods.end()) {
-		std::cerr << "Invalid HTTP method'" << m_method << "'" << std::endl;
+		Logger::error() << "Request::parseRequest(): Invalid HTTP method'" << m_method << "'" << std::endl;
 		return false;
 	}
 
@@ -79,7 +80,7 @@ bool Request::parseRequest(const std::string &data)
 	if (m_url.find("http") == 0) {
 		std::smatch match;
 		if (!std::regex_search(m_url, match, urlRegex)) {
-			std::cerr << "Failed to match absolute URL '" << m_url << "'" << std::endl;
+			Logger::error() << "Request::parseRequest(): Failed to match absolute URL '" << m_url << "'" << std::endl;
 			return false;
 		}
 
@@ -108,7 +109,7 @@ bool Request::parseRequest(const std::string &data)
 	std::smatch versionMatch;
 	iss >> versionString;
 	if (!std::regex_search(versionString, versionMatch, versionRegex)) {
-		std::cerr << "Failed to match HTTP version" << std::endl;
+		Logger::error() << "Request::parseRequest(): Failed to match HTTP version" << std::endl;
 		return false;
 	}
 	m_versionMajor = std::stoi(versionMatch[1]);
@@ -116,6 +117,10 @@ bool Request::parseRequest(const std::string &data)
 
 	iss.ignore(9999, '\n');
 	parseFields(iss);
+
+	if (m_url.empty()) {
+		m_url = getField("Host") + m_uri + m_query;
+	}
 
 	return true;
 }

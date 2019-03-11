@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2019
 ** zia
 ** File description:
-** HTTPModule.hpp
+** FileServeModule.hpp
 */
 
 #pragma once
@@ -10,7 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace Modules {
-	class HTTPMod;
+	class FileServe;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,26 +18,34 @@ namespace Modules {
 #include "Module.hpp"
 
 #include <fstream>
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace Modules
 {
 
-	class EXPORT HTTPMod : public AModule
+	class EXPORT FileServe : public AModule
 	{
 	public:
-		HTTPMod(ModuleLoader *ml);
-		~HTTPMod();
+		static const std::map<std::string, std::string> mimeTypes;
 
-		bool onReceive(json &host, std::shared_ptr<Net::TcpSocket>, std::string &);
-		bool onParsing(json &host, const std::string &buffer, HTTP::Request &req);
+	public:
+		FileServe(ModuleLoader *ml);
+		~FileServe();
+
 		bool onContentGen(json &host, HTTP::Request &req, HTTP::Response &res);
-		bool onSend(json &host, std::shared_ptr<Net::TcpSocket>, const std::string &);
 
 		// Unused
 		bool onConnection(json &, std::shared_ptr<Net::TcpSocket>) { return false; }
+		bool onReceive(json &, std::shared_ptr<Net::TcpSocket>, std::string &) { return false; }
+		bool onParsing(json &, const std::string &, HTTP::Request &) { return false; }
+		bool onSend(json &, std::shared_ptr<Net::TcpSocket>, const std::string &) { return false; }
 		bool checkModule() { return false; }
+
+	private:
+		std::string getMimeType(const fs::path &path);
 	};
 
 }

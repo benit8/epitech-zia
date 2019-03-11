@@ -24,17 +24,32 @@ set(EXEC_NAME zia)
 set(SOURCES
 	src/main.cpp
 	src/Zia.cpp
+	src/Zia.hpp
 	src/ModuleLoader.cpp
+	src/ModuleLoader.hpp
+	src/Logger.cpp
+	src/Logger.hpp
 	src/Network/IpAddress.cpp
+	src/Network/IpAddress.hpp
 	src/Network/Packet.cpp
+	src/Network/Packet.hpp
 	src/Network/Socket.cpp
+	src/Network/Socket.hpp
+	src/Network/SocketImpl.hpp
 	src/Network/SocketSelector.cpp
+	src/Network/SocketSelector.hpp
 	src/Network/TcpListener.cpp
+	src/Network/TcpListener.hpp
 	src/Network/TcpSocket.cpp
+	src/Network/TcpSocket.hpp
 	src/Network/UdpSocket.cpp
+	src/Network/UdpSocket.hpp
 	src/HTTP/FieldContainer.cpp
+	src/HTTP/FieldContainer.hpp
 	src/HTTP/Request.cpp
+	src/HTTP/Request.hpp
 	src/HTTP/Response.cpp
+	src/HTTP/Response.hpp
 )
 
 add_executable(${EXEC_NAME} ${SOURCES})

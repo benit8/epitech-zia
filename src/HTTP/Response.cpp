@@ -61,7 +61,8 @@ std::map<Response::Status, std::string> Response::statusStrings = {
 
 Response::Response()
 : m_status(InternalServerError)
-, m_dataLength(0)
+, m_body("")
+, m_data("")
 {
 }
 
@@ -70,6 +71,18 @@ Response::~Response()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+void Response::body(std::ifstream &ifs)
+{
+	ifs.seekg(0, std::ios::end);
+	m_body.reserve(ifs.tellg());
+	ifs.seekg(0, std::ios::beg);
+
+	m_body.assign(
+		std::istreambuf_iterator<char>(ifs),
+		std::istreambuf_iterator<char>()
+	);
+}
 
 std::string Response::prepare()
 {

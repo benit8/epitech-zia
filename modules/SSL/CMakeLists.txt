@@ -15,6 +15,8 @@ add_definitions("-L/usr/lib")
 
 set(SOURCES
 	SSLModule.cpp
+	SSLModule.hpp
+	Colors.h
 )
 
 add_library(${MODULE_NAME} SHARED ${SOURCES})

@@ -7,3 +7,4 @@
 
 add_subdirectory(HTTP/)
 add_subdirectory(SSL/)
+add_subdirectory(FileServe/)

@@ -23,10 +23,10 @@ SSLmod::~SSLmod()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool SSLmod::onReceive(const json& host, std::shared_ptr<Net::TcpSocket> sock, std::string &/*buffer*/)
+bool SSLmod::onReceive(json& host, std::shared_ptr<Net::TcpSocket> sock, std::string &/*buffer*/)
 {
   /*
-  ** Un exemple d'utilisation du `const json &host`:
+  ** Un exemple d'utilisation du `json &host`:
   ** ---------------------------------------------------------------------------
   ** std::string certFile = host["SSL"]["Cert"].get<std::string>();
   ** std::string keyFile = host["SSL"]["Key"].get<std::string>();
@@ -60,7 +60,7 @@ bool SSLmod::onReceive(const json& host, std::shared_ptr<Net::TcpSocket> sock, s
   return true;
 }
 
-bool	SSLmod::onSend(const json& /*host*/, std::shared_ptr<Net::TcpSocket> /*sock*/, const std::string &/*buffer*/)
+bool	SSLmod::onSend(json& /*host*/, std::shared_ptr<Net::TcpSocket> /*sock*/, const std::string &/*buffer*/)
 {
   return true;
 }

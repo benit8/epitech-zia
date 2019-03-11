@@ -17,6 +17,7 @@ class AModule;
 #include "json.hpp"
 #include "Export.hpp"
 #include "HTTP.hpp"
+#include "Logger.hpp"
 #include "ModuleLoader.hpp"
 #include "Network/TcpSocket.hpp"
 
@@ -31,11 +32,11 @@ class IModule
 public:
 	virtual ~IModule() = default;
 
-	virtual bool onConnection(const json &, std::shared_ptr<Net::TcpSocket>) = 0;
-	virtual bool onReceive(const json &, std::shared_ptr<Net::TcpSocket>, std::string &) = 0;
-	virtual bool onParsing(const json &, const std::string &, HTTP::Request &) = 0;
-	virtual bool onContentGen(const json &, HTTP::Request &, HTTP::Response &) = 0;
-	virtual bool onSend(const json &, std::shared_ptr<Net::TcpSocket>, const std::string &) = 0;
+	virtual bool onConnection(json &, std::shared_ptr<Net::TcpSocket>) = 0;
+	virtual bool onReceive(json &, std::shared_ptr<Net::TcpSocket>, std::string &) = 0;
+	virtual bool onParsing(json &, const std::string &, HTTP::Request &) = 0;
+	virtual bool onContentGen(json &, HTTP::Request &, HTTP::Response &) = 0;
+	virtual bool onSend(json &, std::shared_ptr<Net::TcpSocket>, const std::string &) = 0;
         virtual bool checkModule() = 0;
 
 	virtual const std::string &getName() = 0;

@@ -6,6 +6,7 @@
 */
 
 #include "ModuleLoader.hpp"
+#include "Logger.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +23,7 @@ ModuleLoader::~ModuleLoader()
 		(*destructor)(mod.second.module);
 
 		dlclose(mod.second.handle);
-		std::cout << "Unloaded module '" << mod.first << "'" << std::endl;
+		Logger::info() << "Unloaded module '" << mod.first << "'" << std::endl;
 	}
 }
 
