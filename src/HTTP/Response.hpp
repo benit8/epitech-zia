@@ -88,8 +88,8 @@ public:
 public:
 	void status(Status status) { m_status = status; }
 	Status status() { return m_status; }
-	void body(const std::string &body) { m_body = body; }
-	void body(std::ifstream &ifs);
+	void body(const std::string &body, bool append = true);
+	void body(std::ifstream &ifs, bool append = false);
 	const std::string &body() { return m_body; }
 	const std::string &data() { return m_data; }
 	std::size_t length() const { return m_data.length(); }

@@ -60,6 +60,8 @@ public:
 	const std::string &uri() const { return m_uri; }
 	const std::string &url() const { return m_url; }
 	const std::string &query() const { return m_query; }
+	int versionMajor() const { return m_versionMajor; }
+	int versionMinor() const { return m_versionMinor; }
 
 
 private:

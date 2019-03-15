@@ -15,6 +15,8 @@ namespace Net {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <mutex>
+
 #include "Socket.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +35,8 @@ public:
 	void remove(Socket &socket);
 	void clear();
 	bool wait(unsigned timeout = 0);
-	bool isReady(Socket &socket) const;
+	bool isReady(Socket &socket);
+	size_t count();
 
 	SocketSelector &operator=(const SocketSelector &right);
 
@@ -41,6 +44,7 @@ private:
 	struct SocketSelectorImpl;
 
 	SocketSelectorImpl *m_impl;
+	std::mutex m_mutex;
 };
 
 }

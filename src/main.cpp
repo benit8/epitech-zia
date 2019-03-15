@@ -13,10 +13,4 @@ int main(int argc, char **argv)
 	zia.loadConfig();
 	zia.loadModules();
 	return zia.run();
-
-
-	// Logger::debug() << "testing " << 1 << " " << 1.23f << std::endl;
-	// Logger::debug() << "something" << " " << "else" << std::endl;
-	// Logger::error() << "haaaaaa" << "aaaaaaaa" << std::endl;
-	// return 0;
 }

@@ -33,6 +33,24 @@ using namespace nlohmann;
 
 class Zia
 {
+private:
+	struct SocketVars
+	{
+		Net::TcpSocket socket;
+		json host;
+		std::mutex mutex;
+		std::unique_lock<std::mutex> lock;
+		bool tbd;
+
+		SocketVars(json host_)
+		: socket()
+		, host(host_)
+		, mutex()
+		, lock(mutex, std::defer_lock)
+		, tbd(false)
+		{}
+	};
+
 public:
 	Zia(const std::string &configFilename);
 	~Zia();
@@ -46,17 +64,17 @@ private:
 	bool createListener(json &host, const std::string &address);
 	bool parseHostAddress(const std::string &hostString, Net::IpAddress &address, std::uint16_t &port);
 	void handleNetworkEvent();
-	void handleListenerEvent(Net::TcpListener *listener, json &host);
-	void handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket, json &host);
+	void handleListenerEvent(std::shared_ptr<Net::TcpListener> listener, json &host);
+	bool handleSocketEvent(Net::TcpSocket &socket, json &host);
 
-	bool onConnection(json &host, std::shared_ptr<Net::TcpSocket> socket) {
+	bool onConnection(json &host, Net::TcpSocket &socket) {
 		auto hook = m_hooks.find("Connection");
 		if (hook == m_hooks.end())
 			return false;
 		IModule *mod = m_moduleLoader.getModule(hook->second);
 		return mod == nullptr ? false : mod->onConnection(host, socket);
 	}
-	bool onReceive(json &host, std::shared_ptr<Net::TcpSocket> socket, std::string &buffer) {
+	bool onReceive(json &host, Net::TcpSocket &socket, std::string &buffer) {
 		auto hook = m_hooks.find("Receive");
 		if (hook == m_hooks.end())
 			return false;
@@ -77,7 +95,7 @@ private:
 		IModule *mod = m_moduleLoader.getModule(hook->second);
 		return mod == nullptr ? false : mod->onContentGen(host, req, res);
 	}
-	bool onSend(json &host, std::shared_ptr<Net::TcpSocket> socket, std::string &buffer) {
+	bool onSend(json &host, Net::TcpSocket &socket, std::string &buffer) {
 		auto hook = m_hooks.find("Send");
 		if (hook == m_hooks.end())
 			return false;
@@ -96,10 +114,11 @@ private:
 
 	bool m_running;
 	Net::SocketSelector m_selector;
-	std::map<Net::TcpListener *, json> m_hosts;
-	std::map<std::shared_ptr<Net::TcpSocket>, json> m_aliveSockets;
+	std::map<std::shared_ptr<Net::TcpListener>, json> m_hosts;
+	std::list<std::shared_ptr<SocketVars>> m_aliveSockets;
 	std::map<std::string, std::string> m_hooks;
 	ThreadPool m_workers;
+	std::mutex m_socketMutex;
 
 	static std::list<Zia *> s_instances;
 };

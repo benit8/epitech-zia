@@ -12,23 +12,6 @@
 namespace Modules
 {
 
-namespace priv
-{
-	std::string exec(const std::string &cmd)
-	{
-		std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-		if (!pipe)
-			throw std::runtime_error("popen() failed!");
-
-		std::string result;
-		std::array<char, 128> buffer;
-		while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
-			result += buffer.data();
-
-		return result;
-	}
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 FileServe::FileServe(ModuleLoader *ml)
@@ -44,8 +27,7 @@ FileServe::~FileServe()
 
 bool FileServe::onContentGen(json &host, HTTP::Request &req, HTTP::Response &res)
 {
-	std::string root = host["Root"].get<std::string>();
-	fs::path p = root + req.uri();
+	fs::path p = host["Root"].get<std::string>() + req.uri();
 
 	if (!fs::exists(p)) {
 		res.status(HTTP::Response::NotFound);
@@ -58,14 +40,27 @@ bool FileServe::onContentGen(json &host, HTTP::Request &req, HTTP::Response &res
 			p /= "index.html";
 		else {
 			// TODO: display directory contents
-			res.status(HTTP::Response::NotImplemented);
-			return false;
+			if (host.count("Indexes") > 0 && host["Indexes"] == "Off")
+				res.status(HTTP::Response::Forbidden);
+			else
+				displayDirectoryContents(p, req, res);
+			return true;
 		}
 	}
 	else if (!fs::is_regular_file(p)) {
 		res.status(HTTP::Response::Forbidden);
 		return true;
 	}
+
+
+	// if (p.has_stem() && p.extension() == ".php") {
+	// 	IModule *phpcgi = m_ml->getModule("PHPCGI");
+	// 	if (phpcgi == nullptr) {
+	// 		Logger::error() << "FileServe::onContentGen(): Could not get PHPCGI module" << std::endl;
+	// 		return false;
+	// 	}
+	// 	return phpcgi->onContentGen(host, req, res);
+	// }
 
 	std::ifstream ifs(p);
 	if (ifs.good()) {
@@ -78,6 +73,31 @@ bool FileServe::onContentGen(json &host, HTTP::Request &req, HTTP::Response &res
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+void FileServe::displayDirectoryContents(const fs::path &dir, HTTP::Request &req, HTTP::Response &res)
+{
+	std::string dirname = req.uri();
+
+	std::ostringstream oss;
+	oss << "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Index of " << dirname << "</title></head><body>";
+	oss << "<h1>Index of " << dirname << "</h1><hr>";
+	for (auto &it : fs::directory_iterator(dir)) {
+		auto &entry = it.path();
+		fs::path uriRelPath = dirname;
+		uriRelPath /= entry.filename();
+
+		oss << "<a href=\"" << uriRelPath.string() << "\">";
+		oss << uriRelPath.filename().string();
+		if (fs::is_directory(entry))
+			oss << "/";
+		oss << "</a><br>";
+	}
+	oss << "</body></html>";
+
+	res.body(oss.str());
+	res.status(HTTP::Response::Ok);
+	res.setField("Content-Type", "text/html");
+}
 
 std::string FileServe::getMimeType(const fs::path &p)
 {

@@ -72,13 +72,28 @@ Response::~Response()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void Response::body(std::ifstream &ifs)
+void Response::body(const std::string &body, bool append)
+{
+	if (append)
+		m_body += body;
+	else
+		m_body = body;
+}
+
+void Response::body(std::ifstream &ifs, bool append)
 {
 	ifs.seekg(0, std::ios::end);
-	m_body.reserve(ifs.tellg());
+	size_t size = ifs.tellg();
 	ifs.seekg(0, std::ios::beg);
 
-	m_body.assign(
+	if (append)
+		size += m_body.length();
+	m_body.reserve(size);
+
+	if (!append)
+		m_body.clear();
+
+	m_body.append(
 		std::istreambuf_iterator<char>(ifs),
 		std::istreambuf_iterator<char>()
 	);

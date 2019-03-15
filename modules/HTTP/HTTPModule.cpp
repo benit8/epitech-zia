@@ -25,7 +25,7 @@ HTTPMod::~HTTPMod()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool HTTPMod::onReceive(json &host, std::shared_ptr<Net::TcpSocket> socket, std::string &rawReq)
+bool HTTPMod::onReceive(json &host, Net::TcpSocket &socket, std::string &rawReq)
 {
 	rawReq.clear();
 
@@ -39,7 +39,7 @@ bool HTTPMod::onReceive(json &host, std::shared_ptr<Net::TcpSocket> socket, std:
 		return ssl->onReceive(host, socket, rawReq);
 	}
 
-	if (socket->getRemoteAddress() == Net::IpAddress::None)
+	if (socket.getRemoteAddress() == Net::IpAddress::None)
 		return false;
 
 	// Normal read
@@ -48,9 +48,9 @@ bool HTTPMod::onReceive(json &host, std::shared_ptr<Net::TcpSocket> socket, std:
 	for (;;) {
 		char buffer[readSize] = {0};
 		std::size_t received = 0;
-		Net::Socket::Status s = socket->receive(buffer, readSize, received);
+		Net::Socket::Status s = socket.receive(buffer, readSize, received);
 		if (s != Net::Socket::Done) {
-			Logger::error() << "HTTPMod::onReceive(): Data reception failed (" << s << ") " << *socket << std::endl;
+			Logger::error() << "HTTPMod::onReceive(): Data reception failed (" << s << ") " << socket << std::endl;
 			return false;
 		}
 
@@ -60,7 +60,7 @@ bool HTTPMod::onReceive(json &host, std::shared_ptr<Net::TcpSocket> socket, std:
 			break;
 	}
 
-	Logger::debug() << ">> Received " << rawReq.length() << " bytes " << *socket << std::endl;
+	Logger::debug() << ">> Received " << rawReq.length() << " bytes " << socket << std::endl;
 	Logger::debug() << rawReq;
 
 	return true;
@@ -78,7 +78,7 @@ bool HTTPMod::onContentGen(json &/*host*/, HTTP::Request &/*req*/, HTTP::Respons
 	return true;
 }
 
-bool HTTPMod::onSend(json &host, std::shared_ptr<Net::TcpSocket> socket, const std::string &buffer)
+bool HTTPMod::onSend(json &host, Net::TcpSocket & socket, const std::string &buffer)
 {
 	// Do we use SSL ?
 	if (host.count("SSL") > 0 && host["SSL"].is_object()) {
@@ -91,9 +91,9 @@ bool HTTPMod::onSend(json &host, std::shared_ptr<Net::TcpSocket> socket, const s
 	}
 
 	// Normal send
-	Logger::debug() << "<< Sending " << buffer.length() << " bytes " << *socket << std::endl;
+	Logger::debug() << "<< Sending " << buffer.length() << " bytes " << socket << std::endl;
 	Logger::debug() << (buffer.find("charset=binary") == std::string::npos ? buffer : "[Binary data]") << std::endl;
-	return socket->send(buffer.c_str(), buffer.length()) != Net::Socket::Done;
+	return socket.send(buffer.c_str(), buffer.length()) != Net::Socket::Done;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

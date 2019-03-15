@@ -29,14 +29,9 @@ public:
 	SSLmod(ModuleLoader *ml);
 	~SSLmod();
 
-	bool	onReceive(json &host, std::shared_ptr<Net::TcpSocket> socket, std::string &buffer);
-	bool	onSend(json &host, std::shared_ptr<Net::TcpSocket> socket, const std::string &buffer);
-	bool	checkModule();
-
-	// Unused
-	bool	onParsing(json &, const std::string &, HTTP::Request &) { return false; }
-	bool	onConnection(json &, std::shared_ptr<Net::TcpSocket>) { return false; }
-	bool	onContentGen(json &, HTTP::Request &, HTTP::Response &) { return false; }
+	bool	onReceive(json &host, Net::TcpSocket &socket, std::string &buffer) override;
+	bool	onSend(json &host, Net::TcpSocket &socket, const std::string &buffer) override;
+	bool	checkModule() override;
 
 private:
 	SSL_CTX		*m_ctx;

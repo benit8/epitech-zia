@@ -23,7 +23,7 @@ SSLmod::~SSLmod()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool SSLmod::onReceive(json& host, std::shared_ptr<Net::TcpSocket> sock, std::string &/*buffer*/)
+bool SSLmod::onReceive(json& host, Net::TcpSocket &sock, std::string &/*buffer*/)
 {
   /*
   ** Un exemple d'utilisation du `json &host`:
@@ -36,8 +36,8 @@ bool SSLmod::onReceive(json& host, std::shared_ptr<Net::TcpSocket> sock, std::st
   ** ---------------------------------------------------------------------------
   */
 
-  m_socket = sock->getHandle();
-  m_port = sock->getRemotePort();
+  m_socket = sock.getHandle();
+  m_port = sock.getRemotePort();
   // Init CTX
   m_ctx = SSL_CTX_new(SSLv23_server_method());
   if (!m_ctx)
@@ -60,7 +60,7 @@ bool SSLmod::onReceive(json& host, std::shared_ptr<Net::TcpSocket> sock, std::st
   return true;
 }
 
-bool	SSLmod::onSend(json& /*host*/, std::shared_ptr<Net::TcpSocket> /*sock*/, const std::string &/*buffer*/)
+bool	SSLmod::onSend(json& /*host*/, Net::TcpSocket & /*sock*/, const std::string &/*buffer*/)
 {
   return true;
 }

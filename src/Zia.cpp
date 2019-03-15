@@ -76,18 +76,17 @@ int Zia::run()
 			handleNetworkEvent();
 	}
 
-	for (auto &sock : m_aliveSockets) {
-		m_selector.remove(*(sock.first));
-		sock.first->disconnect();
+	m_workers.stop();
+
+	for (auto &vars : m_aliveSockets) {
+		m_selector.remove(vars->socket);
+		vars->socket.disconnect();
 	}
 
 	for (auto &host : m_hosts) {
 		host.first->close();
 		m_selector.remove(*host.first);
-		delete host.first;
 	}
-
-	m_workers.stop();
 
 	return 0;
 }
@@ -103,10 +102,9 @@ bool Zia::createListener(json &host, const std::string &address)
 		return false;
 	}
 
-	Net::TcpListener *listener = new Net::TcpListener;
+	auto listener = std::make_shared<Net::TcpListener>();
 	if (listener->listen(port, addr) != Net::Socket::Done) {
 		Logger::error() << "Failed to listen to " << address << std::endl;
-		delete listener;
 		return false;
 	}
 
@@ -148,52 +146,63 @@ void Zia::handleNetworkEvent()
 			handleListenerEvent(host.first, host.second[0]);
 		}
 	}
-	for (auto &socket : m_aliveSockets) {
-		if (m_selector.isReady(*(socket.first))) {
-			if (socket.first->getRemoteAddress() == Net::IpAddress::None) {
-				m_selector.remove(*(socket.first));
-				m_aliveSockets.erase(socket.first);
-			}
-			else {
-				m_workers.push([&](int, std::shared_ptr<Net::TcpSocket> sock, json &host) {
-					handleSocketEvent(sock, host);
-				}, socket.first, socket.second);
-			}
+
+	for (auto it = m_aliveSockets.begin(); it != m_aliveSockets.end(); ++it) {
+		auto vars = *it;
+		if (vars->lock)
+			continue;
+
+		if (m_selector.isReady(vars->socket)) {
+			vars->lock.lock();
+			m_workers.push([&](int, std::shared_ptr<SocketVars> v) {
+				if (handleSocketEvent(v->socket, v->host))
+					v->lock.unlock();
+				else {
+					m_selector.remove(v->socket);
+					v->socket.disconnect();
+					v->tbd = true;
+				}
+			}, vars);
 		}
+	}
+
+	{
+		std::unique_lock<std::mutex> lock(m_socketMutex);
+		m_aliveSockets.remove_if([](std::shared_ptr<SocketVars> vars) { return vars->tbd; });
 	}
 }
 
-void Zia::handleListenerEvent(Net::TcpListener *listener, json &host)
+void Zia::handleListenerEvent(std::shared_ptr<Net::TcpListener> listener, json &host)
 {
-	std::shared_ptr<Net::TcpSocket> socket = std::make_shared<Net::TcpSocket>();
-	Net::Socket::Status status = listener->accept(*socket);
+	std::shared_ptr<SocketVars> vars = std::make_shared<SocketVars>(host);
+	Net::Socket::Status status = listener->accept(vars->socket);
 	if (status != Net::Socket::Done) {
 		Logger::warning() << "-- Failed to accept new client: (" << status << ")" << std::endl;
 		return;
 	}
 	else {
-		Logger::info() << "++ Connection from " << *socket << std::endl;
+		Logger::info() << "++ Connection from " << vars->socket << std::endl;
 	}
 
-	if (!onConnection(host, socket)) {
+	if (!onConnection(host, vars->socket)) {
 		// If we block the socket (by disconnecting it)
-		if (socket->getRemoteAddress() == Net::IpAddress::None)
+		if (vars->socket.getRemoteAddress() == Net::IpAddress::None)
 			return;
 	}
 
-	m_aliveSockets.emplace(socket, host);
-	m_selector.add(*socket);
+	m_selector.add(vars->socket);
+	{
+		std::unique_lock<std::mutex> lock(m_socketMutex);
+		m_aliveSockets.push_back(vars);
+		Logger::info() << m_aliveSockets.size() << " alive sockets" << std::endl;
+	}
 }
 
-void Zia::handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket, json &host)
+bool Zia::handleSocketEvent(Net::TcpSocket &socket, json &host)
 {
 	std::string buffer;
-	if (!onReceive(host, socket, buffer)) {
-		m_selector.remove(*socket);
-		m_aliveSockets.erase(socket);
-		socket->disconnect();
-		return;
-	}
+	if (!onReceive(host, socket, buffer))
+		return false;
 
 	////////////////////////////////////////////////////////////////////////
 
@@ -212,11 +221,10 @@ void Zia::handleSocketEvent(std::shared_ptr<Net::TcpSocket> socket, json &host)
 
 	////////////////////////////////////////////////////////////////////////
 
-	if (req["Connection"] == "close") {
-		m_selector.remove(*socket);
-		m_aliveSockets.erase(socket);
-		socket->disconnect();
-	}
+	if (req["Connection"] == "close")
+		return false;
+
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
