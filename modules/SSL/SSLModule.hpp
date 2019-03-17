@@ -35,8 +35,6 @@ public:
 
 private:
 	SSL_CTX		*m_ctx;
-	SSL		*m_ssl;
-	int		m_socket;
 	uint16_t	m_port;
 	std::string	m_address;
 	bool		m_isEnabled;
