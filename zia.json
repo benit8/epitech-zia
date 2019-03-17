@@ -1,7 +1,7 @@
 {
 	"Modules": {
 		"Path": "modules",
-		"List": ["HTTP", "SSL", "FileServe"]
+		"List": ["HTTP", "FileServe", "PHPCGI", "SSL"]
 	},
 	"Hooks": {
 		"Connection": "",

@@ -53,14 +53,16 @@ bool FileServe::onContentGen(json &host, HTTP::Request &req, HTTP::Response &res
 	}
 
 
-	// if (p.has_stem() && p.extension() == ".php") {
-	// 	IModule *phpcgi = m_ml->getModule("PHPCGI");
-	// 	if (phpcgi == nullptr) {
-	// 		Logger::error() << "FileServe::onContentGen(): Could not get PHPCGI module" << std::endl;
-	// 		return false;
-	// 	}
-	// 	return phpcgi->onContentGen(host, req, res);
-	// }
+	if (p.has_stem() && p.extension() == ".php") {
+		IModule *phpcgi = m_ml->getModule("PHPCGI");
+		if (phpcgi == nullptr) {
+			Logger::error() << "FileServe::onContentGen(): Could not get PHPCGI module" << std::endl;
+			return false;
+		}
+		req["__scriptName"] = p;
+		return phpcgi->onContentGen(host, req, res);
+	}
+
 
 	std::ifstream ifs(p);
 	if (ifs.good()) {

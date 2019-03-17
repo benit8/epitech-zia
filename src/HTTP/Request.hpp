@@ -53,12 +53,14 @@ public:
 	~Request();
 
 	bool parseRequest(const std::string &data);
+	std::string version();
+	std::string url();
 
 	const std::string &method() const { return m_method; }
+	const std::string &protocol() const { return m_protocol; }
 	const std::string &host() const { return m_host; }
-	std::uint16_t port() const { return m_port; }
+	const std::string &port() const { return m_port; }
 	const std::string &uri() const { return m_uri; }
-	const std::string &url() const { return m_url; }
 	const std::string &query() const { return m_query; }
 	int versionMajor() const { return m_versionMajor; }
 	int versionMinor() const { return m_versionMinor; }
@@ -66,9 +68,9 @@ public:
 
 private:
 	std::string m_method;
+	std::string m_protocol;
 	std::string m_host;
-	std::uint16_t m_port;
-	std::string m_url;
+	std::string m_port;
 	std::string m_uri;
 	std::string m_query;
 	int m_versionMajor;

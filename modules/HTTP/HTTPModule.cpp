@@ -60,7 +60,7 @@ bool HTTPMod::onReceive(json &host, Net::TcpSocket &socket, std::string &rawReq)
 			break;
 	}
 
-	Logger::debug() << ">> Received " << rawReq.length() << " bytes " << socket << std::endl;
+	Logger::info() << ">> Received " << rawReq.length() << " bytes " << socket << std::endl;
 	Logger::debug() << rawReq;
 
 	return true;
@@ -91,8 +91,8 @@ bool HTTPMod::onSend(json &host, Net::TcpSocket & socket, const std::string &buf
 	}
 
 	// Normal send
-	Logger::debug() << "<< Sending " << buffer.length() << " bytes " << socket << std::endl;
-	Logger::debug() << (buffer.find("charset=binary") == std::string::npos ? buffer : "[Binary data]") << std::endl;
+	Logger::info() << "<< Sending " << buffer.length() << " bytes " << socket << std::endl;
+	Logger::debug() << (buffer.find("text/") != std::string::npos ? buffer : "[Binary data]") << std::endl;
 	return socket.send(buffer.c_str(), buffer.length()) != Net::Socket::Done;
 }
 

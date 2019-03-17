@@ -194,7 +194,6 @@ void Zia::handleListenerEvent(std::shared_ptr<Net::TcpListener> listener, json &
 	{
 		std::unique_lock<std::mutex> lock(m_socketMutex);
 		m_aliveSockets.push_back(vars);
-		Logger::info() << m_aliveSockets.size() << " alive sockets" << std::endl;
 	}
 }
 
@@ -207,12 +206,16 @@ bool Zia::handleSocketEvent(Net::TcpSocket &socket, json &host)
 	////////////////////////////////////////////////////////////////////////
 
 	HTTP::Request req;
-	HTTP::Response res;
-	onParsing(host, buffer, req);
+	req["__remoteAddress"] = socket.getRemoteAddress().toString();
+	req["__remotePort"] = std::to_string(socket.getRemotePort());
+	if (!onParsing(host, buffer, req))
+		Logger::error() << "Zia::handleSocketEvent(): Failed to parse client request" << std::endl;
 
 	////////////////////////////////////////////////////////////////////////
 
-	onContentGen(host, req, res);
+	HTTP::Response res;
+	if (!onContentGen(host, req, res))
+		Logger::error() << "Zia::handleSocketEvent(): Failed to generate content" << std::endl;
 
 	////////////////////////////////////////////////////////////////////////
 

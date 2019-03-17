@@ -138,28 +138,28 @@ IpAddress IpAddress::getLocalAddress()
 IpAddress IpAddress::getPublicAddress(unsigned timeout)
 {
 	TcpSocket socket;
-	if (socket.connect("ipinfo.io", 80, timeout) == Socket::Done) {
-		const char *req = "GET /ip HTTP/1.1\r\nHost: ipinfo.io\r\nUser-Agent: libcppnet/0.1.0\r\nConnection: close\r\n\r\n";
+	if (socket.connect("ipinfo.io", 80, timeout) != Socket::Done)
+		return IpAddress();
 
-		if (socket.send(req, strlen(req)) == Socket::Done) {
-			std::string receivedStr;
-			std::size_t size = 0;
-			char buffer[1024];
-			while (socket.receive(buffer, sizeof(buffer), size) == Socket::Done)
-				receivedStr.append(buffer, buffer + size);
-
-			std::istringstream iss(receivedStr);
-			iss.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			std::string line;
-			while (std::getline(iss, line) && (line.length() > 1)) {}
-			std::getline(iss, line);
-			return IpAddress(line);
-		}
-
+	const char *req = "GET /ip HTTP/1.1\r\nHost: ipinfo.io\r\nUser-Agent: libcppnet/0.1.0\r\nConnection: close\r\n\r\n";
+	if (socket.send(req, strlen(req)) != Socket::Done) {
 		socket.disconnect();
+		return IpAddress();
 	}
 
-	return IpAddress();
+	std::string receivedStr;
+	std::size_t size = 0;
+	char buffer[1024];
+	while (socket.receive(buffer, sizeof(buffer), size) == Socket::Done)
+		receivedStr.append(buffer, buffer + size);
+	socket.disconnect();
+
+	std::istringstream iss(receivedStr);
+	iss.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	std::string line;
+	while (std::getline(iss, line) && (line.length() > 1)) {}
+	std::getline(iss, line);
+	return IpAddress(line);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

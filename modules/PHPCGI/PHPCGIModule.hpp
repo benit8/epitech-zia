@@ -20,9 +20,14 @@ namespace Modules {
 #include <cstdlib>
 #include <cstdio>
 #include <unistd.h>
+#include <sys/time.h>
 #include <sys/wait.h>
+#include <algorithm>
+#include <chrono>
 #include <fstream>
 #include <experimental/filesystem>
+#include <string>
+
 namespace fs = std::experimental::filesystem;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,6 +42,9 @@ namespace Modules
 		~PHPCGI();
 
 		bool onContentGen(json &host, HTTP::Request &req, HTTP::Response &res) override;
+
+	private:
+		const char **buildEnv(json &host, HTTP::Request &req);
 	};
 
 }

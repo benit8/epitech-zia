@@ -6,7 +6,7 @@
 */
 
 #include "FieldContainer.hpp"
-#include <iostream>
+
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace HTTP
@@ -14,22 +14,24 @@ namespace HTTP
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void FieldContainer::parseFields(std::istringstream &iss)
+void FieldContainer::parseFields(std::istream &is)
 {
 	const std::regex reg("^([A-Za-z\\-]+)\\s*:\\s*(.*)\\r$");
 
 	std::string line;
-	while (std::getline(iss, line)) {
+	while (std::getline(is, line)) {
 		std::smatch match;
-		if (std::regex_search(line, match, reg) && match.size() == 3)
+		if (!std::regex_search(line, match, reg))
+			break;
+		if (match.size() == 3)
 			m_fields[match[1]] = match[2];
 	}
 }
 
-void FieldContainer::exportFields(std::ostringstream &oss)
+void FieldContainer::exportFields(std::ostream &os)
 {
 	for (auto field : m_fields) {
-		oss << field.first << ": " << field.second << "\r\n";
+		os << field.first << ": " << field.second << "\r\n";
 	}
 }
 

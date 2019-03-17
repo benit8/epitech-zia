@@ -80,11 +80,12 @@ void Response::body(const std::string &body, bool append)
 		m_body = body;
 }
 
-void Response::body(std::ifstream &ifs, bool append)
+void Response::body(std::istream &is, bool append)
 {
-	ifs.seekg(0, std::ios::end);
-	size_t size = ifs.tellg();
-	ifs.seekg(0, std::ios::beg);
+	size_t pos = is.tellg();
+	is.seekg(0, std::ios::end);
+	size_t size = is.tellg();
+	is.seekg(pos, std::ios::beg);
 
 	if (append)
 		size += m_body.length();
@@ -94,7 +95,7 @@ void Response::body(std::ifstream &ifs, bool append)
 		m_body.clear();
 
 	m_body.append(
-		std::istreambuf_iterator<char>(ifs),
+		std::istreambuf_iterator<char>(is),
 		std::istreambuf_iterator<char>()
 	);
 }

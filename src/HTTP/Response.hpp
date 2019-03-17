@@ -17,7 +17,7 @@ namespace HTTP {
 
 #include "FieldContainer.hpp"
 
-#include <fstream>
+#include <iostream>
 #include <map>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ public:
 	void status(Status status) { m_status = status; }
 	Status status() { return m_status; }
 	void body(const std::string &body, bool append = true);
-	void body(std::ifstream &ifs, bool append = false);
+	void body(std::istream &is, bool append = false);
 	const std::string &body() { return m_body; }
 	const std::string &data() { return m_data; }
 	std::size_t length() const { return m_data.length(); }
