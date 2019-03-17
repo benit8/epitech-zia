@@ -40,7 +40,6 @@ void Zia::loadConfig()
 	std::ifstream ifs(m_configFilename);
 	if (!ifs.is_open()) {
 		Logger::error() << "Failed to open configuration file '" << m_configFilename << "'" << std::endl;
-		m_config = R"("Workers":5,"Modules":{"Path":"modules","List":["HTTP","FileServe","PHPCGI"]},"Hooks":{"Connection":"","Receive":"HTTP","Parsing":"HTTP","ContentGen":"FileServe","Send":"HTTP"},"Hosts": [])"_json;
 	}
 	else {
 		ifs >> m_config;
@@ -80,7 +79,7 @@ int Zia::run()
 {
 	for (auto &hook : m_hooks) {
 		if (hook.second.empty()) {
-			Logger::warning() << "Hook " << hook.first " is null" << std::endl;
+			Logger::warning() << "Hook " << hook.first << " is null" << std::endl;
 			continue;
 		}
 		if (!m_moduleLoader.hasModule(hook.second))
