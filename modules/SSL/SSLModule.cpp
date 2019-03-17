@@ -94,7 +94,7 @@ bool SSLmod::onReceive(json& host, Net::TcpSocket &socket, std::string &rawReq)
   // Lets read what he has to say
   const std::size_t readSize = 1024;
   std::size_t len = 0;
-  do {
+  for (;;) {
     if (socket.getRemoteAddress() == Net::IpAddress::None ||
   	socket.getRemoteAddress() == Net::IpAddress::Any)
       return false;
@@ -113,7 +113,6 @@ bool SSLmod::onReceive(json& host, Net::TcpSocket &socket, std::string &rawReq)
     if (recv < readSize)
       break;
   }
-  while (SSL_pending(ssl) > 0);
 
   Logger::info() << ">> (SSL) Received " << rawReq.length() << " bytes " << socket << std::endl;
   Logger::debug() << rawReq;
