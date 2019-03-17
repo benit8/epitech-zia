@@ -30,8 +30,6 @@ using namespace nlohmann;
 class IModule
 {
 public:
-	virtual ~IModule() = default;
-
 	virtual bool onConnection(json &, Net::TcpSocket &) = 0;
 	virtual bool onReceive(json &, Net::TcpSocket &, std::string &) = 0;
 	virtual bool onParsing(json &, const std::string &, HTTP::Request &) = 0;
