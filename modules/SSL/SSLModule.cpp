@@ -10,7 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 SSLmod::SSLmod(ModuleLoader *ml)
-  : AModule(ml, "SSL")
+  : AModule(ml)
 {
   // Load openssl modules
   OPENSSL_init_ssl(0, NULL);
@@ -38,7 +38,7 @@ bool SSLmod::onReceive(json& host, Net::TcpSocket &socket, std::string &rawReq)
   if (socket.getRemoteAddress() == Net::IpAddress::None ||
       socket.getRemoteAddress() == Net::IpAddress::Any)
     return false;
-  
+
   std::string certFile = host["SSL"]["Cert"].get<std::string>();
   std::string keyFile = host["SSL"]["Key"].get<std::string>();
 
@@ -62,10 +62,10 @@ bool SSLmod::onReceive(json& host, Net::TcpSocket &socket, std::string &rawReq)
   if (m_isEnabled == false)
     return false;
   // Reached SSL struct construction lets accept the guy in
-  
+
   int	iResult;
   bool	no_error = true;
-  
+
   do
     {
       iResult = SSL_accept(ssl);
@@ -117,7 +117,7 @@ bool SSLmod::onReceive(json& host, Net::TcpSocket &socket, std::string &rawReq)
 
   Logger::info() << ">> (SSL) Received " << rawReq.length() << " bytes " << socket << std::endl;
   Logger::debug() << rawReq;
-  
+
   return true;
 }
 
@@ -125,7 +125,7 @@ bool	SSLmod::onSend(json& /*host*/, Net::TcpSocket &socket, const std::string &t
 {
   int	iResult;
   bool	no_error = true;
-  
+
   do {
     iResult = SSL_write(ssl, toSend.c_str(), toSend.size());
     switch (SSL_get_error(ssl, iResult)) {
@@ -143,13 +143,13 @@ bool	SSLmod::onSend(json& /*host*/, Net::TcpSocket &socket, const std::string &t
     default:
       no_error = false;
       break;
-    }    
+    }
   }
   while (iResult > 0 && no_error);
   Logger::info() << "SSLmod::onSend(): sent " << toSend.size() << " bytes "
 		 << socket << std::endl;
   Logger::debug() << toSend << std::endl;
-  
+
   return true;
 }
 

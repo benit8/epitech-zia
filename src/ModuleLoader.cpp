@@ -73,3 +73,8 @@ IModule *ModuleLoader::getModule(const std::string &name)
 {
 	return m_mods.find(name) != m_mods.end() ? m_mods[name].module : nullptr;
 }
+
+bool ModuleLoader::hasModule(const std::string &name)
+{
+	return m_mods.find(name) != m_mods.end();
+}

@@ -15,7 +15,7 @@ namespace Modules
 ////////////////////////////////////////////////////////////////////////////////
 
 PHPCGI::PHPCGI(ModuleLoader *ml)
-: AModule(ml, "PHPCGI")
+: AModule(ml)
 {
 }
 
