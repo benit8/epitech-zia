@@ -72,6 +72,7 @@ bool SSLmod::onReceive(json& host, Net::TcpSocket &socket, std::string &rawReq)
       switch(SSL_get_error(ssl, iResult))
 	{
 	case SSL_ERROR_NONE:
+	  break;
 	case SSL_ERROR_ZERO_RETURN:
 	case SSL_ERROR_WANT_READ:
 	  break;
@@ -97,9 +98,11 @@ bool SSLmod::onReceive(json& host, Net::TcpSocket &socket, std::string &rawReq)
     if (socket.getRemoteAddress() == Net::IpAddress::None ||
   	socket.getRemoteAddress() == Net::IpAddress::Any)
       return false;
-    char	buff[readSize] = {0};
+    char	buff[readSize + 1] = {0};
     std::size_t recv = SSL_read(ssl, buff, readSize);
-    
+
+    if (SSL_get_error(ssl, recv) == SSL_ERROR_WANT_READ)
+      break;
     if (recv <= 0) {
       Logger::error() << "SSLmod::onReceive() : data recepetion fail. (SSL_read returned <= 0) " << socket << std::endl;
       //      return false;
@@ -107,8 +110,8 @@ bool SSLmod::onReceive(json& host, Net::TcpSocket &socket, std::string &rawReq)
     buff[recv] = 0;
     rawReq.append(buff, recv);
     len += recv;
-    // if (recv < readSize)
-    //   break;
+    if (recv < readSize)
+      break;
   }
   while (SSL_pending(ssl) > 0);
 
