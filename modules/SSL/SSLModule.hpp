@@ -19,7 +19,6 @@ class SSLmod;
 #include <openssl/opensslv.h>
 
 #include "Module.hpp"
-#include "./Colors.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -31,10 +30,10 @@ public:
 
 	bool	onReceive(json &host, Net::TcpSocket &socket, std::string &buffer) override;
 	bool	onSend(json &host, Net::TcpSocket &socket, const std::string &buffer) override;
-	bool	checkModule() override;
-
+	
 private:
 	SSL_CTX		*m_ctx;
+	SSL		*ssl;
 	uint16_t	m_port;
 	std::string	m_address;
 	bool		m_isEnabled;
