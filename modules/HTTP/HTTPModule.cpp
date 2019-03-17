@@ -32,7 +32,6 @@ bool HTTPMod::onReceive(json &host, Net::TcpSocket &socket, std::string &rawReq)
 	// Do we use SSL ?
 	if (host.count("SSL") > 0 && host["SSL"].is_object()) {
 		IModule *ssl = m_ml->getModule("SSL");
-		std::cout << "ssl mode in http" << std::endl;
 		if (ssl == nullptr) {
 			Logger::error() << "HTTPMod::onReceive(): Could not get SSL module" << std::endl;
 			return false;
