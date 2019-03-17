@@ -48,6 +48,7 @@ public:
 	void setModulesPath(const std::string &modulesPath);
 	IModule *loadModule(const std::string &moduleName);
 	IModule *getModule(const std::string &moduleName);
+	bool hasModule(const std::string &moduleName);
 
 private:
 	std::string makeModulePath(const std::string &moduleName);

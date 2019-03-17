@@ -15,7 +15,7 @@ namespace Modules
 ////////////////////////////////////////////////////////////////////////////////
 
 HTTPMod::HTTPMod(ModuleLoader *ml)
-: AModule(ml, "HTTP")
+: AModule(ml)
 {
 }
 

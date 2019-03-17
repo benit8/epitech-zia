@@ -35,9 +35,6 @@ public:
 	virtual bool onParsing(json &, const std::string &, HTTP::Request &) = 0;
 	virtual bool onContentGen(json &, HTTP::Request &, HTTP::Response &) = 0;
 	virtual bool onSend(json &, Net::TcpSocket &, const std::string &) = 0;
-	virtual bool checkModule() = 0;
-
-	virtual const std::string &getName() = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,9 +42,8 @@ public:
 class AModule : public IModule
 {
 public:
-	AModule(ModuleLoader *ml, const std::string &name)
+	AModule(ModuleLoader *ml)
 	: m_ml(ml)
-	, m_name(name)
 	{}
 
 	virtual ~AModule()
@@ -58,12 +54,7 @@ public:
 	virtual bool onParsing(json &, const std::string &, HTTP::Request &) { return false; }
 	virtual bool onContentGen(json &, HTTP::Request &, HTTP::Response &) { return false; }
 	virtual bool onSend(json &, Net::TcpSocket &, const std::string &) { return false; }
-	virtual bool checkModule() { return false; }
-
-public:
-	const std::string &getName() { return m_name; }
 
 protected:
 	ModuleLoader *m_ml;
-	std::string m_name;
 };

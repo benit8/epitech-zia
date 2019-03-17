@@ -38,17 +38,24 @@ Zia::~Zia()
 void Zia::loadConfig()
 {
 	std::ifstream ifs(m_configFilename);
-	if (!ifs.is_open())
+	if (!ifs.is_open()) {
 		Logger::error() << "Failed to open configuration file '" << m_configFilename << "'" << std::endl;
-	else
+		m_config = R"("Workers":5,"Modules":{"Path":"modules","List":["HTTP","FileServe","PHPCGI"]},"Hooks":{"Connection":"","Receive":"HTTP","Parsing":"HTTP","ContentGen":"FileServe","Send":"HTTP"},"Hosts": [])"_json;
+	}
+	else {
 		ifs >> m_config;
+	}
+
+	size_t workersSize = m_config.value("Workers", 5);
+	if (m_workers.size() != workersSize)
+		m_workers.resize(workersSize);
 }
 
 void Zia::loadModules()
 {
 	// Load actual modules
-	m_moduleLoader.setModulesPath(m_config["Modules"]["Path"].get<std::string>());
-	auto moduleNames = m_config["Modules"]["List"].get<std::vector<std::string>>();
+	m_moduleLoader.setModulesPath(m_config["Modules"].value("Path", "modules"));
+	auto moduleNames = m_config["Modules"].value<std::vector<std::string>>("List", {"HTTP", "FileServe", "PHPCGI"});
 	for (auto it = moduleNames.begin(); it != moduleNames.end(); ++it) {
 		try {
 			m_moduleLoader.loadModule(*it);
@@ -60,14 +67,34 @@ void Zia::loadModules()
 	}
 
 	// Setup hooks
-	m_hooks = m_config["Hooks"].get<std::map<std::string, std::string>>();
+	m_hooks = m_config.value<std::map<std::string, std::string>>("Hooks", {
+		{"Connection", ""},
+		{"Receive", "HTTP"},
+		{"Parsing", "HTTP"},
+		{"ContentGen", "FileServe"},
+		{"Send", "HTTP"}
+	});
 }
 
 int Zia::run()
 {
+	for (auto &hook : m_hooks) {
+		if (hook.second.empty()) {
+			Logger::warning() << "Hook " << hook.first " is null" << std::endl;
+			continue;
+		}
+		if (!m_moduleLoader.hasModule(hook.second))
+			Logger::error() << "Module '" << hook.second << "' (on hook " << hook.first << ") is not loaded" << std::endl;
+	}
+
 	for (auto &host : m_config["Hosts"]) {
 		for (auto &address : host["Address"])
 			createListener(host, address);
+	}
+
+	if (m_hosts.empty()) {
+		Logger::error() << "No hosts were opened" << std::endl;
+		return 1;
 	}
 
 	m_running = true;
@@ -241,5 +268,7 @@ void Zia::handleSignal(int signum)
 {
 	std::cout << std::endl;
 	Logger::warning() << "Caught signal " << signum << ": " << strsignal(signum) << std::endl;
+	if (signum == SIGPIPE)
+		return;
 	m_running = false;
 }

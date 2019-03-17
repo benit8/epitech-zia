@@ -15,7 +15,7 @@ namespace Modules
 ////////////////////////////////////////////////////////////////////////////////
 
 FileServe::FileServe(ModuleLoader *ml)
-: AModule(ml, "FileServe")
+: AModule(ml)
 {
 }
 
